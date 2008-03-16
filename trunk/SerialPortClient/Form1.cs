@@ -30,7 +30,13 @@ namespace GUI
             //listen
             serial = new System.IO.Ports.SerialPort(cboPorts.SelectedItem.ToString());
             serial.Open();
+            serial.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(serial_DataReceived);
             statusLabel.Text = "Listening...";
+        }
+
+        void serial_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        {
+            txtData.Text = txtData.Text + serial.ReadLine();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -38,6 +44,7 @@ namespace GUI
             //connect
             serial = new System.IO.Ports.SerialPort(cboPorts.SelectedItem.ToString());
             serial.Open();
+            serial.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(serial_DataReceived);
             statusLabel.Text = "Connecting...";
         }
 
@@ -61,6 +68,11 @@ namespace GUI
                 btnConnect.Enabled = false;
                 btnListen.Enabled = false;
             }
+        }
+
+        private void btnSend_Click(object sender, EventArgs e)
+        {
+            serial.WriteLine("hello");
         }
     }
 }
