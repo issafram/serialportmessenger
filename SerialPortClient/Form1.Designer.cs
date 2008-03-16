@@ -52,9 +52,10 @@ namespace GUI
             // btnListen
             // 
             this.btnListen.Enabled = false;
-            this.btnListen.Location = new System.Drawing.Point(256, 64);
+            this.btnListen.Location = new System.Drawing.Point(192, 52);
+            this.btnListen.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnListen.Name = "btnListen";
-            this.btnListen.Size = new System.Drawing.Size(75, 23);
+            this.btnListen.Size = new System.Drawing.Size(56, 19);
             this.btnListen.TabIndex = 0;
             this.btnListen.Text = "Listen";
             this.btnListen.UseVisualStyleBackColor = true;
@@ -63,9 +64,10 @@ namespace GUI
             // btnConnect
             // 
             this.btnConnect.Enabled = false;
-            this.btnConnect.Location = new System.Drawing.Point(32, 64);
+            this.btnConnect.Location = new System.Drawing.Point(24, 52);
+            this.btnConnect.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(75, 23);
+            this.btnConnect.Size = new System.Drawing.Size(56, 19);
             this.btnConnect.TabIndex = 1;
             this.btnConnect.Text = "Connect";
             this.btnConnect.UseVisualStyleBackColor = true;
@@ -74,31 +76,34 @@ namespace GUI
             // cboPorts
             // 
             this.cboPorts.FormattingEnabled = true;
-            this.cboPorts.Location = new System.Drawing.Point(126, 31);
+            this.cboPorts.Location = new System.Drawing.Point(94, 25);
+            this.cboPorts.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cboPorts.Name = "cboPorts";
-            this.cboPorts.Size = new System.Drawing.Size(121, 24);
+            this.cboPorts.Size = new System.Drawing.Size(92, 21);
             this.cboPorts.TabIndex = 2;
             this.cboPorts.Text = "Select Port";
             this.cboPorts.SelectedIndexChanged += new System.EventHandler(this.cboPorts_SelectedIndexChanged);
             // 
             // txtData
             // 
-            this.txtData.Location = new System.Drawing.Point(21, 112);
+            this.txtData.Location = new System.Drawing.Point(16, 91);
+            this.txtData.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtData.Multiline = true;
             this.txtData.Name = "txtData";
-            this.txtData.Size = new System.Drawing.Size(310, 72);
+            this.txtData.Size = new System.Drawing.Size(234, 59);
             this.txtData.TabIndex = 3;
             this.txtData.Text = "Enter data";
             // 
             // btnSend
             // 
-            this.btnSend.Enabled = false;
-            this.btnSend.Location = new System.Drawing.Point(256, 199);
+            this.btnSend.Location = new System.Drawing.Point(192, 162);
+            this.btnSend.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(75, 23);
+            this.btnSend.Size = new System.Drawing.Size(56, 19);
             this.btnSend.TabIndex = 4;
             this.btnSend.Text = "Send";
             this.btnSend.UseVisualStyleBackColor = true;
+            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
             // menuStrip1
             // 
@@ -108,7 +113,8 @@ namespace GUI
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(372, 28);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(286, 24);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -117,13 +123,13 @@ namespace GUI
             this.fIleToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitToolStripMenuItem});
             this.fIleToolStripMenuItem.Name = "fIleToolStripMenuItem";
-            this.fIleToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
+            this.fIleToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fIleToolStripMenuItem.Text = "File";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(102, 24);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -133,19 +139,19 @@ namespace GUI
             this.baudRateToolStripMenuItem1,
             this.dataFormatToolStripMenuItem});
             this.baudRateToolStripMenuItem.Name = "baudRateToolStripMenuItem";
-            this.baudRateToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
+            this.baudRateToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.baudRateToolStripMenuItem.Text = "Options";
             // 
             // baudRateToolStripMenuItem1
             // 
             this.baudRateToolStripMenuItem1.Name = "baudRateToolStripMenuItem1";
-            this.baudRateToolStripMenuItem1.Size = new System.Drawing.Size(161, 24);
+            this.baudRateToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.baudRateToolStripMenuItem1.Text = "Baud Rate";
             // 
             // dataFormatToolStripMenuItem
             // 
             this.dataFormatToolStripMenuItem.Name = "dataFormatToolStripMenuItem";
-            this.dataFormatToolStripMenuItem.Size = new System.Drawing.Size(161, 24);
+            this.dataFormatToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.dataFormatToolStripMenuItem.Text = "Data Format";
             // 
             // helpToolStripMenuItem
@@ -153,21 +159,22 @@ namespace GUI
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "About";
             // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(12, 258);
+            this.checkBox1.Location = new System.Drawing.Point(9, 210);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(330, 21);
+            this.checkBox1.Size = new System.Drawing.Size(252, 17);
             this.checkBox1.TabIndex = 6;
             this.checkBox1.Text = "Automatically Send Data After Specified Interval";
             this.checkBox1.UseVisualStyleBackColor = true;
@@ -175,9 +182,10 @@ namespace GUI
             // comboBox2
             // 
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(32, 285);
+            this.comboBox2.Location = new System.Drawing.Point(24, 232);
+            this.comboBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(135, 24);
+            this.comboBox2.Size = new System.Drawing.Size(102, 21);
             this.comboBox2.TabIndex = 7;
             this.comboBox2.Text = "Enter interval (ms)";
             // 
@@ -185,22 +193,23 @@ namespace GUI
             // 
             this.status.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusLabel});
-            this.status.Location = new System.Drawing.Point(0, 310);
+            this.status.Location = new System.Drawing.Point(0, 260);
             this.status.Name = "status";
-            this.status.Size = new System.Drawing.Size(372, 25);
+            this.status.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
+            this.status.Size = new System.Drawing.Size(286, 22);
             this.status.TabIndex = 8;
             // 
             // statusLabel
             // 
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(34, 20);
+            this.statusLabel.Size = new System.Drawing.Size(25, 17);
             this.statusLabel.Text = "Idle";
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(372, 335);
+            this.ClientSize = new System.Drawing.Size(286, 282);
             this.Controls.Add(this.status);
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.checkBox1);
@@ -211,6 +220,7 @@ namespace GUI
             this.Controls.Add(this.btnListen);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Form1";
             this.Text = "Serial Port Data Transfer";
             this.Load += new System.EventHandler(this.Form1_Load);
