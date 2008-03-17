@@ -6,17 +6,18 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace GUI
+namespace SerialPortClient
 {
-    public partial class Form1 : Form
+    public partial class Main : Form
     {
-        public System.IO.Ports.SerialPort serial;
-        public Form1()
+        private System.IO.Ports.SerialPort serial;
+        private About about; 
+        public Main()
         {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void Main_Load(object sender, EventArgs e)
         {
             foreach (string s in System.IO.Ports.SerialPort.GetPortNames())
             {
@@ -25,9 +26,8 @@ namespace GUI
             
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnListen_Click(object sender, EventArgs e)
         {
-            //listen
             serial = new System.IO.Ports.SerialPort(cboPorts.SelectedItem.ToString());
             serial.Open();
             serial.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(serial_DataReceived);
@@ -39,21 +39,26 @@ namespace GUI
             txtHistory.Text = txtHistory.Text + serial.ReadLine() + System.Environment.NewLine;
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void btnConnect_Click(object sender, EventArgs e)
         {
-            //connect
             serial = new System.IO.Ports.SerialPort(cboPorts.SelectedItem.ToString());
             serial.Open();
             serial.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(serial_DataReceived);
             statusLabel.Text = "Connecting...";
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void mnuExit_Click(object sender, EventArgs e)
         {
-            if (serial != null){
+            Exit();
+            Close();
+        }
+
+        public void Exit()
+        {
+            if (serial != null)
+            {
                 serial.Close();
             }
-            Close();
         }
 
         private void cboPorts_SelectedIndexChanged(object sender, EventArgs e)
@@ -74,6 +79,30 @@ namespace GUI
         {
             serial.WriteLine(txtMessage.Text);
         }
+
+        private void mnuAbout_Click(object sender, EventArgs e)
+        {
+            if (about == null)
+            {
+                about = new About();
+            }
+            else
+            {
+                if (about.IsDisposed)
+                {
+                    about = new About();
+                }
+            }
+            about.Show();
+        }
+
+        private void Main_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Exit();
+        }
+
+
+
 
     }
 }
