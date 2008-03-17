@@ -36,7 +36,7 @@ namespace GUI
 
         void serial_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
-            txtData.Text = txtData.Text + serial.ReadLine();
+            txtHistory.Text = txtHistory.Text + serial.ReadLine() + System.Environment.NewLine;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -72,7 +72,8 @@ namespace GUI
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            serial.WriteLine("hello");
+            serial.WriteLine(txtMessage.Text);
         }
+
     }
 }
