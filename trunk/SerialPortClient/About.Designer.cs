@@ -1,6 +1,6 @@
-namespace DataLogger
+namespace SerialPortClient
 {
-    partial class Form1
+    partial class About
     {
         /// <summary>
         /// Required designer variable.
@@ -28,12 +28,21 @@ namespace DataLogger
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // About
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(282, 257);
+            this.Name = "About";
+            this.Text = "About";
+            this.TopMost = true;
+            this.Load += new System.EventHandler(this.About_Load);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
     }
 }
-
