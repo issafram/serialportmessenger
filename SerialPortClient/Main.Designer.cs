@@ -93,7 +93,7 @@ namespace SerialPortClient
             this.txtMessage.Name = "txtMessage";
             this.txtMessage.Size = new System.Drawing.Size(311, 33);
             this.txtMessage.TabIndex = 3;
-            this.txtMessage.Text = "Enter data";
+            this.txtMessage.Text = "Enter message";
             // 
             // btnSend
             // 
@@ -130,7 +130,7 @@ namespace SerialPortClient
             // mnuExit
             // 
             this.mnuExit.Name = "mnuExit";
-            this.mnuExit.Size = new System.Drawing.Size(152, 24);
+            this.mnuExit.Size = new System.Drawing.Size(102, 24);
             this.mnuExit.Text = "Exit";
             this.mnuExit.Click += new System.EventHandler(this.mnuExit_Click);
             // 
@@ -166,7 +166,7 @@ namespace SerialPortClient
             // mnuAbout
             // 
             this.mnuAbout.Name = "mnuAbout";
-            this.mnuAbout.Size = new System.Drawing.Size(152, 24);
+            this.mnuAbout.Size = new System.Drawing.Size(119, 24);
             this.mnuAbout.Text = "About";
             this.mnuAbout.Click += new System.EventHandler(this.mnuAbout_Click);
             // 
@@ -212,6 +212,7 @@ namespace SerialPortClient
             this.txtHistory.Location = new System.Drawing.Point(21, 102);
             this.txtHistory.Multiline = true;
             this.txtHistory.Name = "txtHistory";
+            this.txtHistory.ReadOnly = true;
             this.txtHistory.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtHistory.Size = new System.Drawing.Size(310, 197);
             this.txtHistory.TabIndex = 9;
