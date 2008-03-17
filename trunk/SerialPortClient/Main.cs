@@ -36,7 +36,23 @@ namespace SerialPortClient
 
         void serial_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
-            txtHistory.Text = txtHistory.Text + serial.ReadLine() + System.Environment.NewLine;
+            string data = serial.ReadLine();
+            string command = data.Substring(data.IndexOf("#") + 1, data.IndexOf("#", data.IndexOf("#") + 1) - 1);
+            switch (command)
+            {
+                case "C":
+                    serial.WriteLine("#CC#");
+                    statusLabel.Text = "Connected";
+                    break;
+                case "CC":
+                    statusLabel.Text = "Connected";
+                    break;
+                case "E":
+                    statusLabel.Text = "Connection Closed - By Remote Client";
+                    break;
+            }
+
+            //txtHistory.Text = txtHistory.Text + serial.ReadLine() + System.Environment.NewLine;
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -45,6 +61,7 @@ namespace SerialPortClient
             serial.Open();
             serial.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(serial_DataReceived);
             statusLabel.Text = "Connecting...";
+            serial.WriteLine("#C#");
         }
 
         private void mnuExit_Click(object sender, EventArgs e)
@@ -57,7 +74,11 @@ namespace SerialPortClient
         {
             if (serial != null)
             {
-                serial.Close();
+                if (serial.IsOpen)
+                {
+                    serial.WriteLine("#E#");
+                    serial.Close();
+                }
             }
         }
 
