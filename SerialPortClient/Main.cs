@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace SerialPortClient
 {
@@ -34,7 +35,7 @@ namespace SerialPortClient
             statusLabel.Text = "Listening...";
         }
 
-        void serial_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        private void serial_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
             string data = serial.ReadLine();
             string command = data.Substring(data.IndexOf("#") + 1, data.IndexOf("#", data.IndexOf("#") + 1) - 1);
@@ -50,9 +51,27 @@ namespace SerialPortClient
                 case "E":
                     statusLabel.Text = "Connection Closed - By Remote Client";
                     break;
+                case "M":
+                    string message = data.Substring(data.IndexOf("#M#") + 3, data.LastIndexOf("#EM#") - (data.IndexOf("#M#") + 3));
+                    setText(txtHistory, txtHistory.Text + message + System.Environment.NewLine);
+                    message = null;
+                    break;
             }
+        }
 
-            //txtHistory.Text = txtHistory.Text + serial.ReadLine() + System.Environment.NewLine;
+        delegate void setTextCallback(TextBox textBox, string text);
+        private void setText(TextBox textBox, string text)
+        {
+            if (textBox.InvokeRequired)
+            {
+                setTextCallback d = new setTextCallback(setText);
+                Invoke(d, new object[] {textBox, text });
+            }
+            else
+            {
+                textBox.Text = text;
+            }
+            
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -98,7 +117,12 @@ namespace SerialPortClient
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            serial.WriteLine(txtMessage.Text);
+            if (txtMessage.Text != "")
+            {
+                serial.WriteLine("#M#" + txtMessage.Text + "#EM#");
+                txtMessage.Text = "";
+                txtMessage.Focus();
+            }
         }
 
         private void mnuAbout_Click(object sender, EventArgs e)
@@ -122,8 +146,15 @@ namespace SerialPortClient
             Exit();
         }
 
+        private void txtMessage_TextChanged(object sender, EventArgs e)
+        {
+            btnSend.Enabled = NotFormOfBlank(txtMessage.Text);
+        }
 
-
+        private bool NotFormOfBlank(string text)
+        {
+            return (text.Trim() != String.Empty);
+        }
 
     }
 }

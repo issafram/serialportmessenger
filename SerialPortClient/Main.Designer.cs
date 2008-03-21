@@ -41,8 +41,6 @@ namespace SerialPortClient
             this.dataFormatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.status = new System.Windows.Forms.StatusStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.txtHistory = new System.Windows.Forms.TextBox();
@@ -91,13 +89,14 @@ namespace SerialPortClient
             this.txtMessage.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtMessage.Multiline = true;
             this.txtMessage.Name = "txtMessage";
-            this.txtMessage.Size = new System.Drawing.Size(311, 33);
+            this.txtMessage.Size = new System.Drawing.Size(311, 92);
             this.txtMessage.TabIndex = 3;
             this.txtMessage.Text = "Enter message";
+            this.txtMessage.TextChanged += new System.EventHandler(this.txtMessage_TextChanged);
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(256, 352);
+            this.btnSend.Location = new System.Drawing.Point(256, 420);
             this.btnSend.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(75, 23);
@@ -170,27 +169,6 @@ namespace SerialPortClient
             this.mnuAbout.Text = "About";
             this.mnuAbout.Click += new System.EventHandler(this.mnuAbout_Click);
             // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(12, 388);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(330, 21);
-            this.checkBox1.TabIndex = 6;
-            this.checkBox1.Text = "Automatically Send Data After Specified Interval";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(32, 416);
-            this.comboBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(135, 24);
-            this.comboBox2.TabIndex = 7;
-            this.comboBox2.Text = "Enter interval (ms)";
-            // 
             // status
             // 
             this.status.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -224,8 +202,6 @@ namespace SerialPortClient
             this.ClientSize = new System.Drawing.Size(374, 485);
             this.Controls.Add(this.txtHistory);
             this.Controls.Add(this.status);
-            this.Controls.Add(this.comboBox2);
-            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.btnSend);
             this.Controls.Add(this.txtMessage);
             this.Controls.Add(this.cboPorts);
@@ -262,8 +238,6 @@ namespace SerialPortClient
         private System.Windows.Forms.ToolStripMenuItem baudRateToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem dataFormatToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mnuAbout;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.StatusStrip status;
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
         private System.Windows.Forms.TextBox txtHistory;
