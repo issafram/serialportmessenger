@@ -12,10 +12,21 @@ namespace SerialPortClient
     public partial class Main : Form
     {
         private System.IO.Ports.SerialPort serial;
-        private About about; 
+        private About about;
+        private string userName;
+        private string remoteUserName;
+        
         public Main()
         {
             InitializeComponent();
+            remoteUserName = "";
+        }
+
+        public Main(string userName)
+        {
+            this.userName = userName;
+            InitializeComponent();
+            remoteUserName = "";
         }
 
         private void Main_Load(object sender, EventArgs e)
@@ -44,19 +55,33 @@ namespace SerialPortClient
                 case "C":
                     serial.WriteLine("#CC#");
                     statusLabel.Text = "Connected";
+                    serial.WriteLine("#U#" + userName + "#EU#");
                     break;
                 case "CC":
                     statusLabel.Text = "Connected";
+                    serial.WriteLine("#U#" + userName + "#EU#");
+                    break;
+                case "U":
+                    remoteUserName = data.Substring(data.IndexOf("#U#") + 3, data.LastIndexOf("#EU#") - (data.IndexOf("#U#") + 3));
                     break;
                 case "E":
                     statusLabel.Text = "Connection Closed - By Remote Client";
+                    Reset();
                     break;
                 case "M":
                     string message = data.Substring(data.IndexOf("#M#") + 3, data.LastIndexOf("#EM#") - (data.IndexOf("#M#") + 3));
-                    setText(txtHistory, txtHistory.Text + message + System.Environment.NewLine);
+                    setText(txtHistory, txtHistory.Text + remoteUserName + " : " +  message + System.Environment.NewLine);
                     message = null;
                     break;
             }
+        }
+
+        private void Reset()
+        {
+            Exit();
+            btnConnect.Enabled = true;
+            btnListen.Enabled = true;
+            btnSend.Enabled = false;
         }
 
         delegate void setTextCallback(TextBox textBox, string text);
@@ -120,6 +145,7 @@ namespace SerialPortClient
             if (txtMessage.Text != "")
             {
                 serial.WriteLine("#M#" + txtMessage.Text + "#EM#");
+                setText(txtHistory, txtHistory.Text + userName + " : " + txtMessage.Text + System.Environment.NewLine);
                 txtMessage.Text = "";
                 txtMessage.Focus();
             }
@@ -148,12 +174,7 @@ namespace SerialPortClient
 
         private void txtMessage_TextChanged(object sender, EventArgs e)
         {
-            btnSend.Enabled = NotFormOfBlank(txtMessage.Text);
-        }
-
-        private bool NotFormOfBlank(string text)
-        {
-            return (text.Trim() != String.Empty);
+            btnSend.Enabled = CommonFunctions.NotFormOfBlank(txtMessage.Text);
         }
 
     }
