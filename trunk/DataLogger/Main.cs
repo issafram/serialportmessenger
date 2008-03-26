@@ -10,14 +10,14 @@ using System.Reflection;
 
 namespace DataLogger
 {
-    public partial class Form1 : Form
+    public partial class Main : Form
     {
-        public Form1()
+        public Main()
         {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void Main_Load(object sender, EventArgs e)
         {
             Excel._Workbook objBook;
             Excel.Workbooks objBooks;
@@ -38,6 +38,7 @@ namespace DataLogger
             //objBook.SaveAs(@"C:\Documents and Settings\Jon Joyce\Desktop\Test.xls", Excel.XlFileFormat.xlWorkbookNormal,
             //                Missing.Value, Missing.Value, Missing.Value, Missing.Value, Excel.XlSaveAsAccessMode.xlNoChange,
             //                Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value);
+
         }
     }
 }
