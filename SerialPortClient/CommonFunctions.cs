@@ -10,5 +10,10 @@ namespace SerialPortClient
         {
             return (text.Trim() != String.Empty);
         }
+
+        public static string FileNameSafe(string fileName)
+        {
+            return (fileName.Replace(':', '.'));
+        }
     }
 }
