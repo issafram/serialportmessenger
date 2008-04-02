@@ -12,9 +12,13 @@ namespace SerialPortClient
 {
     public partial class Login : Form
     {
+        public DataLogger.Program dl;
         const string quote = "\'";
+        
+        
         public Login()
         {
+            
             InitializeComponent();
         }
 
@@ -101,8 +105,10 @@ namespace SerialPortClient
                 if (authorized)
                 {
                     this.Visible = false;
-                    Main m = new Main(txtUsername.Text);
+                    dl = new DataLogger.Program(CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
+                    Main m = new Main(txtUsername.Text, dl);
                     m.ShowDialog();
+                    dl.CloseFile();
                     btnLogin.Enabled = true;
                     txtUsername.Enabled = true;
                     txtPassword.Enabled = true;

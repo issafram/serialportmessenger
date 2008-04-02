@@ -15,16 +15,18 @@ namespace SerialPortClient
         private About about;
         private string userName;
         private string remoteUserName;
-        
+
+        private DataLogger.Program dl;
         public Main()
         {
             InitializeComponent();
             remoteUserName = "";
         }
 
-        public Main(string userName)
+        public Main(string userName, DataLogger.Program dl)
         {
             this.userName = userName;
+            this.dl = dl;
             InitializeComponent();
             remoteUserName = "";
         }
@@ -71,6 +73,7 @@ namespace SerialPortClient
                 case "M":
                     string message = data.Substring(data.IndexOf("#M#") + 3, data.LastIndexOf("#EM#") - (data.IndexOf("#M#") + 3));
                     setText(txtHistory, txtHistory.Text + remoteUserName + " : " +  message + System.Environment.NewLine);
+                    dl.WriteLine(message);
                     message = null;
                     break;
             }
