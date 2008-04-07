@@ -38,7 +38,7 @@ namespace SerialPortClient
             this.mnuExit = new System.Windows.Forms.ToolStripMenuItem();
             this.baudRateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.baudRateToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.dataFormatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dataLoggerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.status = new System.Windows.Forms.StatusStrip();
@@ -137,7 +137,7 @@ namespace SerialPortClient
             // 
             this.baudRateToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.baudRateToolStripMenuItem1,
-            this.dataFormatToolStripMenuItem});
+            this.dataLoggerToolStripMenuItem});
             this.baudRateToolStripMenuItem.Name = "baudRateToolStripMenuItem";
             this.baudRateToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
             this.baudRateToolStripMenuItem.Text = "Options";
@@ -148,11 +148,12 @@ namespace SerialPortClient
             this.baudRateToolStripMenuItem1.Size = new System.Drawing.Size(161, 24);
             this.baudRateToolStripMenuItem1.Text = "Baud Rate";
             // 
-            // dataFormatToolStripMenuItem
+            // dataLoggerToolStripMenuItem
             // 
-            this.dataFormatToolStripMenuItem.Name = "dataFormatToolStripMenuItem";
-            this.dataFormatToolStripMenuItem.Size = new System.Drawing.Size(161, 24);
-            this.dataFormatToolStripMenuItem.Text = "Data Format";
+            this.dataLoggerToolStripMenuItem.Name = "dataLoggerToolStripMenuItem";
+            this.dataLoggerToolStripMenuItem.Size = new System.Drawing.Size(161, 24);
+            this.dataLoggerToolStripMenuItem.Text = "Data Logger";
+            this.dataLoggerToolStripMenuItem.Click += new System.EventHandler(this.dataLoggerToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -236,7 +237,7 @@ namespace SerialPortClient
         private System.Windows.Forms.ToolStripMenuItem baudRateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem baudRateToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem dataFormatToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dataLoggerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mnuAbout;
         private System.Windows.Forms.StatusStrip status;
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;

@@ -2,12 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
+using System.Collections.Generic;
 
 namespace DataLogger
 {
     public class Program
     {
         private StreamWriter sw;
+        private Main m;
+        private bool _automatic = true;
+        private int _timerInterval = 5;
+        private Timer timer = new Timer();
+        private Queue<string> q;
 
         public Program(string fileName)
         {
@@ -20,16 +26,79 @@ namespace DataLogger
             {
                 sw = File.CreateText(fileName + ".csv");
             }
+            m = new Main(this);
+            q = new Queue<string>();
+            timer.Tick += new EventHandler(timer_Tick);
+        }
+
+        void timer_Tick(object sender, EventArgs e)
+        {
+            while (q.Count > 0)
+            {
+                WriteToFile(q.Dequeue());
+            }
+        }
+
+        private void WriteToFile(string data)
+        {
+            sw.WriteLine(data);
         }
 
         public void WriteLine(string data)
         {
-            sw.WriteLine(DateTime.Now.ToLongTimeString() + "," + data);
+            if (automatic)
+            {
+                WriteToFile(DateTime.Now.ToLongTimeString() + "," + data);
+            }
+            else
+            {
+                q.Enqueue(DateTime.Now.ToLongTimeString() + "," + data);
+            }
         }
 
         public void CloseFile()
         {
             sw.Close();
+        }
+
+        public void ShowOptions()
+        {
+            m.ShowDialog();
+        }
+
+        public bool automatic
+        {
+            get { return _automatic; }
+            set
+            {
+                _automatic = value;
+                if (automatic)
+                {
+                    timer.Stop();
+                }
+                else
+                {
+                    timer.Start();
+                }
+            }
+        }
+
+        public int timerInterval
+        {
+            get { return _timerInterval; }
+            set
+            {
+                _timerInterval = value;
+                timer.Interval = _timerInterval * 1000;
+                if (automatic)
+                {
+                    timer.Stop();
+                }
+                else
+                {
+                    timer.Start();
+                }
+            }
         }
 
         

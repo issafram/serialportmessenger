@@ -249,5 +249,10 @@ namespace SerialPortClient
             btnSend.Enabled = CommonFunctions.NotFormOfBlank(txtMessage.Text);
         }
 
+        private void dataLoggerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            dl.ShowOptions();
+        }
+
     }
 }
