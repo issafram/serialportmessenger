@@ -58,6 +58,12 @@
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
     <Compile Include="CommonFunctions.cs" />
+    <Compile Include="File.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="File.Designer.cs">
+      <DependentUpon>File.cs</DependentUpon>
+    </Compile>
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -75,6 +81,10 @@
     <EmbeddedResource Include="About.resx">
       <SubType>Designer</SubType>
       <DependentUpon>About.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="File.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>File.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Login.resx">
       <SubType>Designer</SubType>

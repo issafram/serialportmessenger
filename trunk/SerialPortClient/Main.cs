@@ -16,7 +16,7 @@ namespace SerialPortClient
         static extern bool FlashWindow(IntPtr hwnd, bool bInvert);
 
 
-        private System.IO.Ports.SerialPort serial;
+        public System.IO.Ports.SerialPort serial;
         private About about;
         private string userName;
         private string remoteUserName;
@@ -25,7 +25,10 @@ namespace SerialPortClient
         private Queue<byte> q = new Queue<byte>();
         private bool fileMode = false;
         private string data = "";
+        private long fileSIZE;
         Thread dataProcessor;
+
+        private File f;
 
         private DataLogger.Program dl;
         public Main()
@@ -48,6 +51,14 @@ namespace SerialPortClient
             {
                 if (fileMode)
                 {
+                    f.WriteByte(q.Dequeue());
+                    fileSIZE = fileSIZE - 1;
+                    if (fileSIZE <= 0)
+                    {
+                        //MessageBox.Show("File RECEIVED");
+                        f.CloseFile();
+                        fileMode = false;
+                    }
                 }
                 else
                 {
@@ -89,6 +100,27 @@ namespace SerialPortClient
                                     message = null;
                                 }
                                 break;
+                            case "F":
+                                if ((data.Length > 7) & (data.EndsWith("#EF#")))
+                                {
+                                    string message = data.Substring(data.IndexOf("#F#") + 3, data.LastIndexOf("#EF#") - (data.IndexOf("#F#") + 3));
+                                    data = "";
+                                    string fileName = message.Substring(0, message.IndexOf(","));
+                                    string size = message.Substring(message.IndexOf(",") + 1);
+                                    fileSIZE = long.Parse(size);
+                                    if (MessageBox.Show(remoteUserName + " wants to send file " + fileName + "(" + size + ")." + System.Environment.NewLine + "Accept?") == DialogResult.OK)
+                                    {
+                                        f = new File(this,false);
+                                        fileMode = true;
+                                        serial.Write("#FA#");
+                                    }
+                                }
+                                break;
+                            case "FA":
+                                //f = new File(this, true);
+                                f.SendFile();
+                                fileMode = false;
+                                break;
                         }
                     }
 
@@ -123,16 +155,9 @@ namespace SerialPortClient
             {
                 serial.Read(b, 0, 1);
                 q.Enqueue(b[0]);
+                dataHandling();
             }
-            //Thread.Sleep(1000);
-            //MessageBox.Show("RECEIVED DATA");
-            dataHandling();
-            //if (dataProcessor.ThreadState != ThreadState.Running)
-            //{
-            //    dataProcessor = new Thread(new ThreadStart(dataHandling));
-            //    dataProcessor.Priority = ThreadPriority.Lowest;
-            //    dataProcessor.Start();
-            //}
+            //dataHandling();
             
             
         }
@@ -252,6 +277,12 @@ namespace SerialPortClient
         private void dataLoggerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dl.ShowOptions();
+        }
+
+        private void sendFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            f = new File(this, true);
+            //f.ShowDialog();
         }
 
     }
