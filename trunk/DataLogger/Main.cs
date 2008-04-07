@@ -14,13 +14,20 @@ namespace DataLogger
 {
     public partial class Main : Form
     {
-        public Main()
+        private Program p;
+        public Main(Program p)
         {
             InitializeComponent();
+            this.p = p;
         }
 
         private void Main_Load(object sender, EventArgs e)
         {
+            rbAutomatic.Checked = p.automatic;
+            rbManual.Checked = !p.automatic;
+            comboboxSeconds.Enabled = !p.automatic;
+            comboboxSeconds.SelectedIndex = comboboxSeconds.Items.IndexOf(p.timerInterval.ToString());
+
             #region Jon's Code
             //Excel._Workbook objBook;
             //Excel.Workbooks objBooks;
@@ -43,5 +50,71 @@ namespace DataLogger
             ////                Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value);
             #endregion
         }
+
+        private void rbAutomatic_CheckedChanged(object sender, EventArgs e)
+        {
+            Validate();
+        }
+
+        private void rbManual_CheckedChanged(object sender, EventArgs e)
+        {
+            Validate();
+        }
+
+        private void Validate()
+        {
+            comboboxSeconds.Enabled = rbManual.Checked;
+            if (rbManual.Checked)
+            {
+                if (comboboxSeconds.SelectedItem != null)
+                {
+                    btnSave.Enabled = IsNumeric(comboboxSeconds.SelectedItem.ToString());
+                }
+                else
+                {
+                    btnSave.Enabled = false;
+                }
+            }
+            else
+            {
+                btnSave.Enabled = true;
+            }
+        }
+
+        public static bool IsNumeric(string Expression)
+        {
+            bool answer = true;
+            if (Expression.Length == 0)
+            {
+                answer = false;
+            }
+            else
+            {
+                for (int i = 0; i < Expression.Length; i++)
+                {
+                    if (!char.IsNumber(Expression, i))
+                    {
+                        answer = false;
+                    }
+                }
+            }
+            return answer;
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            p.automatic = rbAutomatic.Checked;
+            if (!p.automatic)
+            {
+                p.timerInterval = int.Parse(comboboxSeconds.SelectedItem.ToString());
+            }
+            this.Close();
+        }
+
     }
 }
