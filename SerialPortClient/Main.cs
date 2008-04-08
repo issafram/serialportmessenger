@@ -63,7 +63,7 @@ namespace SerialPortClient
                 else
                 {
                     data += ((char)(q.Dequeue())).ToString();
-                    if ((data.Length > 1) & (data.StartsWith("#")) & (data.EndsWith("#")))
+                    if ((data.Length > 1) && (data.StartsWith("#")) && (data.EndsWith("#")))
                     {
                         string command = data.Substring(data.IndexOf("#") + 1, data.IndexOf("#", data.IndexOf("#") + 1) - 1);
                         switch (command)
@@ -80,7 +80,7 @@ namespace SerialPortClient
                                 serial.Write("#U#" + userName + "#EU#");
                                 break;
                             case "U":
-                                if ((data.Length > 7) & (data.EndsWith("#EU#")))
+                                if ((data.Length > 7) && (data.EndsWith("#EU#")))
                                 {
                                     remoteUserName = data.Substring(data.IndexOf("#U#") + 3, data.LastIndexOf("#EU#") - (data.IndexOf("#U#") + 3));
                                     data = "";
@@ -91,7 +91,7 @@ namespace SerialPortClient
                                 Reset();
                                 break;
                             case "M":
-                                if ((data.Length > 7) & (data.EndsWith("#EM#")))
+                                if ((data.Length > 7) && (data.EndsWith("#EM#")))
                                 {
                                     string message = data.Substring(data.IndexOf("#M#") + 3, data.LastIndexOf("#EM#") - (data.IndexOf("#M#") + 3));
                                     data = "";
@@ -101,7 +101,7 @@ namespace SerialPortClient
                                 }
                                 break;
                             case "F":
-                                if ((data.Length > 7) & (data.EndsWith("#EF#")))
+                                if ((data.Length > 7) && (data.EndsWith("#EF#")))
                                 {
                                     string message = data.Substring(data.IndexOf("#F#") + 3, data.LastIndexOf("#EF#") - (data.IndexOf("#F#") + 3));
                                     data = "";
