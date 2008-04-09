@@ -31,10 +31,7 @@ namespace SerialPortClient
             set { _fileInfo = value; }
         }
 
-        private void btnBrowse_Click(object sender, EventArgs e)
-        {
-            
-        }
+
 
         public void WriteByte(byte b)
         {
@@ -50,11 +47,12 @@ namespace SerialPortClient
         public void SendFile()
         {
             byte[] b = new byte[1];
-            while (sw.Position <= sw.Length)
+            while (sw.Position < sw.Length)
             {
                 sw.Read(b, 0, 1);
                 m.serial.Write(b, 0, 1);
             }
+            m.fileMode = false;
             CloseFile();
         }
 

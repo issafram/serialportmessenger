@@ -23,7 +23,7 @@ namespace SerialPortClient
 
         private byte[] b;
         private Queue<byte> q = new Queue<byte>();
-        private bool fileMode = false;
+        public bool fileMode = false;
         private string data = "";
         private long fileSIZE;
         Thread dataProcessor;
@@ -55,14 +55,19 @@ namespace SerialPortClient
                     fileSIZE = fileSIZE - 1;
                     if (fileSIZE <= 0)
                     {
-                        //MessageBox.Show("File RECEIVED");
+                        MessageBox.Show("File RECEIVED");
                         f.CloseFile();
                         fileMode = false;
                     }
                 }
                 else
                 {
+                    //if ((data.Length == 0) && (((char)(q.Peek())).ToString() == "\0"))
+                    //{
+                        //q.Dequeue();
+                    //}
                     data += ((char)(q.Dequeue())).ToString();
+                    System.Diagnostics.Debug.Print(data);
                     if ((data.Length > 1) && (data.StartsWith("#")) && (data.EndsWith("#")))
                     {
                         string command = data.Substring(data.IndexOf("#") + 1, data.IndexOf("#", data.IndexOf("#") + 1) - 1);
@@ -119,8 +124,8 @@ namespace SerialPortClient
                                 break;
                             case "FA":
                                 //f = new File(this, true);
+                                data = "";
                                 f.SendFile();
-                                fileMode = false;
                                 break;
                         }
                     }
@@ -142,10 +147,32 @@ namespace SerialPortClient
             
         }
 
+        private void dataReceive()
+        {
+            while (true)
+            {
+                try
+                {
+                    while (serial.BytesToRead > 0)
+                    {
+                        serial.Read(b, 0, 1);
+                        q.Enqueue(b[0]);
+                        dataHandling();
+                    }
+                }
+                catch (Exception err)
+                {
+
+                }
+            }
+        }
+
         private void btnListen_Click(object sender, EventArgs e)
         {
             serial = new System.IO.Ports.SerialPort(cboPorts.SelectedItem.ToString());
             serial.Open();
+            //dataProcessor = new Thread(new ThreadStart(dataReceive));
+            //dataProcessor.Start();
             serial.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(serial_DataReceived);
             statusLabel.Text = "Listening...";
         }
@@ -199,6 +226,8 @@ namespace SerialPortClient
         {
             serial = new System.IO.Ports.SerialPort(cboPorts.SelectedItem.ToString());
             serial.Open();
+            //dataProcessor = new Thread(new ThreadStart(dataReceive));
+            //dataProcessor.Start();
             serial.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(serial_DataReceived);
             statusLabel.Text = "Connecting...";
             serial.Write("#C#");
@@ -224,6 +253,7 @@ namespace SerialPortClient
                     //MessageBox.Show("serial port CLOSED");
                 }
             }
+            //dataProcessor.Join();
             //MessageBox.Show("EXIT DONE");
             //if (dataProcessor.ThreadState == ThreadState.Running)
             //{
