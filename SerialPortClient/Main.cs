@@ -88,6 +88,7 @@ namespace SerialPortClient
                                 break;
                             case "E":
                                 statusLabel.Text = "Connection Closed - By Remote Client";
+                                serial.Close();
                                 Reset();
                                 break;
                             case "M":
@@ -130,7 +131,7 @@ namespace SerialPortClient
 
         private void Main_Load(object sender, EventArgs e)
         {
-            //Control.CheckForIllegalCrossThreadCalls = false;
+            Control.CheckForIllegalCrossThreadCalls = false;
             b = new byte[1];
             //dataProcessor = new Thread(new ThreadStart(dataHandling));
             //dataProcessor.Start();
@@ -151,13 +152,19 @@ namespace SerialPortClient
 
         private void serial_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
-            while (serial.BytesToRead > 0)
+            try
             {
-                serial.Read(b, 0, 1);
-                q.Enqueue(b[0]);
-                dataHandling();
+                while (serial.BytesToRead > 0)
+                {
+                    serial.Read(b, 0, 1);
+                    q.Enqueue(b[0]);
+                    dataHandling();
+                }
             }
-            //dataHandling();
+            catch (Exception err)
+            {
+                   
+            }
             
             
         }
@@ -209,10 +216,15 @@ namespace SerialPortClient
             {
                 if (serial.IsOpen)
                 {
+                    //MessageBox.Show("serial port is OPEN");
+                    
                     serial.Write("#E#");
+                    //MessageBox.Show("wrote EXIT text");
                     serial.Close();
+                    //MessageBox.Show("serial port CLOSED");
                 }
             }
+            //MessageBox.Show("EXIT DONE");
             //if (dataProcessor.ThreadState == ThreadState.Running)
             //{
                 //while (dataProcessor.ThreadState != ThreadState.Suspended)
