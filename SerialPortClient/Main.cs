@@ -31,6 +31,10 @@ namespace SerialPortClient
         private File f;
 
         private DataLogger.Program dl;
+
+        private bool shift = false;
+
+        private bool micro = false;
         public Main()
         {
             InitializeComponent();
@@ -43,94 +47,108 @@ namespace SerialPortClient
             this.dl = dl;
             InitializeComponent();
             remoteUserName = "";
+            if (userName == "microcontroller")
+            {
+                this.micro = true;
+                txtMessage.Text = "";
+                txtMessage.Enabled = false;
+                btnSend.Enabled = false;
+            }
         }
 
         private void dataHandling()
         {
-            while (q.Count > 0)
+            if (micro)
             {
-                if (fileMode)
+                while (q.Count > 0)
                 {
-                    f.WriteByte(q.Dequeue());
-                    fileSIZE = fileSIZE - 1;
-                    if (fileSIZE <= 0)
-                    {
-                        MessageBox.Show("File RECEIVED");
-                        f.CloseFile();
-                        fileMode = false;
-                    }
+                    setText(txtHistory, txtHistory.Text + ((char)(q.Dequeue())).ToString());
                 }
-                else
+            }
+            else
+            {
+                while (q.Count > 0)
                 {
-                    //if ((data.Length == 0) && (((char)(q.Peek())).ToString() == "\0"))
-                    //{
-                        //q.Dequeue();
-                    //}
-                    data += ((char)(q.Dequeue())).ToString();
-                    System.Diagnostics.Debug.Print(data);
-                    if ((data.Length > 1) && (data.StartsWith("#")) && (data.EndsWith("#")))
+                    if (fileMode)
                     {
-                        string command = data.Substring(data.IndexOf("#") + 1, data.IndexOf("#", data.IndexOf("#") + 1) - 1);
-                        switch (command)
+                        f.WriteByte(q.Dequeue());
+                        fileSIZE = fileSIZE - 1;
+                        if (fileSIZE <= 0)
                         {
-                            case "C":
-                                data = "";
-                                serial.Write("#CC#");
-                                statusLabel.Text = "Connected";
-                                serial.Write("#U#" + userName + "#EU#");
-                                break;
-                            case "CC":
-                                data = "";
-                                statusLabel.Text = "Connected";
-                                serial.Write("#U#" + userName + "#EU#");
-                                break;
-                            case "U":
-                                if ((data.Length > 7) && (data.EndsWith("#EU#")))
-                                {
-                                    remoteUserName = data.Substring(data.IndexOf("#U#") + 3, data.LastIndexOf("#EU#") - (data.IndexOf("#U#") + 3));
+                            MessageBox.Show("File RECEIVED");
+                            f.CloseFile();
+                            fileMode = false;
+                        }
+                    }
+                    else
+                    {
+                        data += ((char)(q.Dequeue())).ToString();
+                        System.Diagnostics.Debug.Print(data);
+                        if ((data.Length > 1) && (data.StartsWith("#")) && (data.EndsWith("#")))
+                        {
+                            string command = data.Substring(data.IndexOf("#") + 1, data.IndexOf("#", data.IndexOf("#") + 1) - 1);
+                            switch (command)
+                            {
+                                case "C":
                                     data = "";
-                                }
-                                break;
-                            case "E":
-                                statusLabel.Text = "Connection Closed - By Remote Client";
-                                serial.Close();
-                                Reset();
-                                break;
-                            case "M":
-                                if ((data.Length > 7) && (data.EndsWith("#EM#")))
-                                {
-                                    string message = data.Substring(data.IndexOf("#M#") + 3, data.LastIndexOf("#EM#") - (data.IndexOf("#M#") + 3));
+                                    serial.Write("#CC#");
+                                    statusLabel.Text = "Connected";
+                                    serial.Write("#U#" + userName + "#EU#");
+                                    break;
+                                case "CC":
                                     data = "";
-                                    setText(txtHistory, txtHistory.Text + remoteUserName + " : " + message + System.Environment.NewLine);
-                                    dl.WriteLine(message);
-                                    message = null;
-                                }
-                                break;
-                            case "F":
-                                if ((data.Length > 7) && (data.EndsWith("#EF#")))
-                                {
-                                    string message = data.Substring(data.IndexOf("#F#") + 3, data.LastIndexOf("#EF#") - (data.IndexOf("#F#") + 3));
-                                    data = "";
-                                    string fileName = message.Substring(0, message.IndexOf(","));
-                                    string size = message.Substring(message.IndexOf(",") + 1);
-                                    fileSIZE = long.Parse(size);
-                                    if (MessageBox.Show(remoteUserName + " wants to send file " + fileName + "(" + size + ")." + System.Environment.NewLine + "Accept?") == DialogResult.OK)
+                                    statusLabel.Text = "Connected";
+                                    serial.Write("#U#" + userName + "#EU#");
+                                    break;
+                                case "U":
+                                    if ((data.Length > 7) && (data.EndsWith("#EU#")))
                                     {
-                                        f = new File(this,false);
-                                        fileMode = true;
-                                        serial.Write("#FA#");
+                                        remoteUserName = data.Substring(data.IndexOf("#U#") + 3, data.LastIndexOf("#EU#") - (data.IndexOf("#U#") + 3));
+                                        data = "";
                                     }
-                                }
-                                break;
-                            case "FA":
-                                //f = new File(this, true);
-                                data = "";
-                                f.SendFile();
-                                break;
+                                    break;
+                                case "E":
+                                    statusLabel.Text = "Connection Closed - By Remote Client";
+                                    serial.Close();
+                                    Reset();
+                                    break;
+                                case "M":
+                                    if ((data.Length > 7) && (data.EndsWith("#EM#")))
+                                    {
+                                        string message = data.Substring(data.IndexOf("#M#") + 3, data.LastIndexOf("#EM#") - (data.IndexOf("#M#") + 3));
+                                        data = "";
+                                        setText(txtHistory, txtHistory.Text + remoteUserName + " : " + message + System.Environment.NewLine);
+                                        dl.WriteLine(message);
+                                        message = null;
+                                    }
+                                    break;
+                                case "F":
+                                    if ((data.Length > 7) && (data.EndsWith("#EF#")))
+                                    {
+                                        string message = data.Substring(data.IndexOf("#F#") + 3, data.LastIndexOf("#EF#") - (data.IndexOf("#F#") + 3));
+                                        data = "";
+                                        string fileName = message.Substring(0, message.IndexOf(","));
+                                        string size = message.Substring(message.IndexOf(",") + 1);
+                                        fileSIZE = long.Parse(size);
+                                        if (MessageBox.Show(remoteUserName + " wants to send file " + fileName + "(" + size + " bytes)." + System.Environment.NewLine + "Accept?", "Accept File?", MessageBoxButtons.YesNo) == DialogResult.OK)
+                                        {
+                                            f = new File(this, false);
+                                            f.fileSize = fileSIZE;
+                                            fileMode = true;
+                                            serial.Write("#FA#");
+                                        }
+                                    }
+                                    break;
+                                case "FA":
+                                    //f = new File(this, true);
+                                    data = "";
+                                    f.SendFile();
+                                    break;
+                            }
                         }
                     }
 
-                }
+                    }
             }
         }
 
@@ -253,6 +271,7 @@ namespace SerialPortClient
                     //MessageBox.Show("serial port CLOSED");
                 }
             }
+            dl.CloseFile();
             //dataProcessor.Join();
             //MessageBox.Show("EXIT DONE");
             //if (dataProcessor.ThreadState == ThreadState.Running)
@@ -325,6 +344,41 @@ namespace SerialPortClient
         {
             f = new File(this, true);
             //f.ShowDialog();
+        }
+
+        private void txtMessage_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            
+            if ((int)(e.KeyChar) == 13)
+            {
+                if (shift)
+                {
+                    string left = txtMessage.Text.Substring(0, txtMessage.SelectionStart);
+                    string right = txtMessage.Text.Substring(txtMessage.SelectionStart);
+                    txtMessage.Text = left + Environment.NewLine + right;
+                    txtMessage.SelectionStart = left.Length;
+                }
+                else
+                {
+                    btnSend_Click(sender, e);
+                }
+            }
+        }
+
+        private void txtMessage_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Shift)
+            {
+                shift = true;
+            }
+        }
+
+        private void txtMessage_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Shift)
+            {
+                shift = false;
+            }
         }
 
     }
