@@ -137,12 +137,21 @@ namespace SerialPortClient
                                             fileMode = true;
                                             serial.Write("#FA#");
                                         }
+                                        else
+                                        {
+                                            serial.Write("#FD#");
+                                        }
                                     }
                                     break;
                                 case "FA":
                                     //f = new File(this, true);
                                     data = "";
                                     f.SendFile();
+                                    break;
+                                case "FD":
+                                    data = "";
+                                    fileMode = false;
+                                    f.CloseFile();
                                     break;
                             }
                         }

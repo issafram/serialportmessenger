@@ -47,16 +47,25 @@ namespace DataLogger
         {
             if (automatic)
             {
-                WriteToFile(DateTime.Now.ToLongTimeString() + "," + data);
+                WriteToFile(DateTime.Now.ToLongTimeString() + "," + ParseForCSV(data));
             }
             else
             {
-                q.Enqueue(DateTime.Now.ToLongTimeString() + "," + data);
+                q.Enqueue(DateTime.Now.ToLongTimeString() + "," + ParseForCSV(data));
             }
+        }
+
+        private string ParseForCSV(string data)
+        {
+            string ret = data;
+            ret = ret.Replace(',', ' ');
+            ret = ret.Replace(Environment.NewLine, Environment.NewLine + ",");
+            return ret;
         }
 
         public void CloseFile()
         {
+            timer.Stop();
             while (q.Count > 0)
             {
                 WriteToFile(q.Dequeue());

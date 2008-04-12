@@ -167,6 +167,11 @@ namespace SerialPortClient
             txtPassword.Enabled = true;
             this.Visible = true;
         }
+
+        private void Login_Load(object sender, EventArgs e)
+        {
+            txtUsername.Focus();
+        }
         
     }
 }
