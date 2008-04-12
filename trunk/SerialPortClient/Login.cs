@@ -34,6 +34,7 @@ namespace SerialPortClient
 
         private void userPassTextChange()
         {
+            btnCreate.Enabled = (CommonFunctions.NotFormOfBlank(txtUsername.Text) & CommonFunctions.NotFormOfBlank(txtPassword.Text));
             btnLogin.Enabled = (CommonFunctions.NotFormOfBlank(txtUsername.Text) & CommonFunctions.NotFormOfBlank(txtPassword.Text));
         }
 
@@ -168,10 +169,88 @@ namespace SerialPortClient
             this.Visible = true;
         }
 
-        private void Login_Load(object sender, EventArgs e)
+        private void btnCreate_Click(object sender, EventArgs e)
         {
-            txtUsername.Focus();
+            btnLogin.Enabled = false;
+            btnCreate.Enabled = false;
+            txtUsername.Enabled = false;
+            txtPassword.Enabled = false;
+            bool exist = false;
+            MySqlConnection conn = new MySqlConnection();
+            JSch jsch = new JSch();
+            string host = "secs.oakland.edu";
+            string user = "iafram";
+            string pass = "password";
+            int sshPort = 22;
+            Session session = jsch.getSession(user, host, sshPort);
+            session.setHost(host);
+            session.setPassword(pass);
+            UserInfo ui = new MyUserInfo();
+            session.setUserInfo(ui);
+            session.connect();
+            session.setPortForwardingL(3306, "localhost", 3306);
+
+            if (session.isConnected())
+            {
+                try
+                {
+                    string dbhost = "localhost";
+                    string dbuser = "iafram";
+                    string dbpass = "password";
+                    string dbdatabase = "iafram";
+                    string connStr = String.Format("server={0};user id={1};password={2}; database={3}; pooling=false",
+                        dbhost, dbuser, dbpass, dbdatabase);
+                    conn = new MySqlConnection(connStr);
+                    conn.Open();
+                    conn.ChangeDatabase(dbdatabase);
+
+                    string query = "SELECT COUNT(*) ";
+                    query += "FROM cse337_project ";
+                    query += "WHERE username = " + quote + txtUsername.Text + quote;
+                    //query += " AND password = " + quote + txtPassword.Text + quote;
+
+                    MySqlCommand command = conn.CreateCommand();
+                    command.CommandText = query;
+                    MySqlDataReader dataReader = command.ExecuteReader();
+                    dataReader.Read();
+                    int rows = int.Parse(dataReader.GetValue(0).ToString());
+                    if (rows == 1)
+                    {
+                        exist = true;
+                    }
+                    else
+                    {
+                        exist = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    session.disconnect();
+                }
+                finally
+                {
+                    conn.Close();
+                }
+                session.disconnect();
+
+                if (exist)
+                {
+                    MessageBox.Show("Profile already exists.");
+                    btnLogin.Enabled = true;
+                    btnCreate.Enabled = true;
+                    txtUsername.Enabled = true;
+                    txtPassword.Enabled = true;
+                }
+                else
+                {
+                    MessageBox.Show("New profile created.");
+                    btnLogin.Enabled = true;
+                    btnCreate.Enabled = true;
+                    txtUsername.Enabled = true;
+                    txtPassword.Enabled = true;
+                }
+            }
         }
-        
     }
 }
