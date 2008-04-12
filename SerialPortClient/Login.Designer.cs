@@ -44,7 +44,7 @@ namespace SerialPortClient
             this.btnLogin.Location = new System.Drawing.Point(124, 96);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(75, 23);
-            this.btnLogin.TabIndex = 0;
+            this.btnLogin.TabIndex = 2;
             this.btnLogin.Text = "Login";
             this.btnLogin.UseVisualStyleBackColor = true;
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
@@ -54,7 +54,7 @@ namespace SerialPortClient
             this.txtUsername.Location = new System.Drawing.Point(99, 28);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(100, 22);
-            this.txtUsername.TabIndex = 1;
+            this.txtUsername.TabIndex = 0;
             this.txtUsername.TextChanged += new System.EventHandler(this.txtUsername_TextChanged);
             // 
             // txtPassword
@@ -63,7 +63,7 @@ namespace SerialPortClient
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(100, 22);
-            this.txtPassword.TabIndex = 2;
+            this.txtPassword.TabIndex = 1;
             this.txtPassword.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtPassword_KeyPress);
             this.txtPassword.TextChanged += new System.EventHandler(this.txtPassword_TextChanged);
             // 
@@ -104,7 +104,7 @@ namespace SerialPortClient
             this.btnMicro.Location = new System.Drawing.Point(12, 186);
             this.btnMicro.Name = "btnMicro";
             this.btnMicro.Size = new System.Drawing.Size(223, 23);
-            this.btnMicro.TabIndex = 6;
+            this.btnMicro.TabIndex = 3;
             this.btnMicro.Text = "Connect to Microcontroller";
             this.btnMicro.UseVisualStyleBackColor = true;
             this.btnMicro.Click += new System.EventHandler(this.btnMicro_Click);
@@ -118,6 +118,7 @@ namespace SerialPortClient
             this.Controls.Add(this.grpLogin);
             this.Name = "Login";
             this.Text = "SPM - Login";
+            this.Load += new System.EventHandler(this.Login_Load);
             this.grpLogin.ResumeLayout(false);
             this.grpLogin.PerformLayout();
             this.ResumeLayout(false);
