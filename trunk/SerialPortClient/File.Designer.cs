@@ -28,33 +28,46 @@ namespace SerialPortClient
         /// </summary>
         private void InitializeComponent()
         {
-            this.txtFileName = new System.Windows.Forms.TextBox();
-            this.btnBrowse = new System.Windows.Forms.Button();
+            this.pbStatus = new System.Windows.Forms.ProgressBar();
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.btnClose = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // txtFileName
+            // pbStatus
             // 
-            this.txtFileName.Location = new System.Drawing.Point(12, 12);
-            this.txtFileName.Name = "txtFileName";
-            this.txtFileName.Size = new System.Drawing.Size(272, 22);
-            this.txtFileName.TabIndex = 0;
+            this.pbStatus.Location = new System.Drawing.Point(12, 32);
+            this.pbStatus.Name = "pbStatus";
+            this.pbStatus.Size = new System.Drawing.Size(336, 23);
+            this.pbStatus.TabIndex = 0;
             // 
-            // btnBrowse
+            // lblStatus
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(290, 11);
-            this.btnBrowse.Name = "btnBrowse";
-            this.btnBrowse.Size = new System.Drawing.Size(75, 23);
-            this.btnBrowse.TabIndex = 1;
-            this.btnBrowse.Text = "Browse";
-            this.btnBrowse.UseVisualStyleBackColor = true;
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Location = new System.Drawing.Point(12, 9);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(48, 17);
+            this.lblStatus.TabIndex = 1;
+            this.lblStatus.Text = "Status";
+            // 
+            // btnClose
+            // 
+            this.btnClose.Enabled = false;
+            this.btnClose.Location = new System.Drawing.Point(273, 65);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(75, 23);
+            this.btnClose.TabIndex = 2;
+            this.btnClose.Text = "Close";
+            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // File
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(377, 165);
-            this.Controls.Add(this.btnBrowse);
-            this.Controls.Add(this.txtFileName);
+            this.ClientSize = new System.Drawing.Size(360, 100);
+            this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.lblStatus);
+            this.Controls.Add(this.pbStatus);
             this.Name = "File";
             this.Text = "File";
             this.ResumeLayout(false);
@@ -64,7 +77,9 @@ namespace SerialPortClient
 
         #endregion
 
-        private System.Windows.Forms.TextBox txtFileName;
-        private System.Windows.Forms.Button btnBrowse;
+        private System.Windows.Forms.ProgressBar pbStatus;
+        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Button btnClose;
+
     }
 }

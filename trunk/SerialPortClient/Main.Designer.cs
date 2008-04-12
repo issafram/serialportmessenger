@@ -35,6 +35,7 @@ namespace SerialPortClient
             this.btnSend = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fIleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sendFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuExit = new System.Windows.Forms.ToolStripMenuItem();
             this.baudRateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.baudRateToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,7 +45,6 @@ namespace SerialPortClient
             this.status = new System.Windows.Forms.StatusStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.txtHistory = new System.Windows.Forms.TextBox();
-            this.sendFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.status.SuspendLayout();
             this.SuspendLayout();
@@ -93,7 +93,10 @@ namespace SerialPortClient
             this.txtMessage.Size = new System.Drawing.Size(311, 92);
             this.txtMessage.TabIndex = 3;
             this.txtMessage.Text = "Enter message";
+            this.txtMessage.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtMessage_KeyUp);
+            this.txtMessage.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtMessage_KeyPress);
             this.txtMessage.TextChanged += new System.EventHandler(this.txtMessage_TextChanged);
+            this.txtMessage.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtMessage_KeyDown);
             // 
             // btnSend
             // 
@@ -128,10 +131,17 @@ namespace SerialPortClient
             this.fIleToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
             this.fIleToolStripMenuItem.Text = "File";
             // 
+            // sendFileToolStripMenuItem
+            // 
+            this.sendFileToolStripMenuItem.Name = "sendFileToolStripMenuItem";
+            this.sendFileToolStripMenuItem.Size = new System.Drawing.Size(138, 24);
+            this.sendFileToolStripMenuItem.Text = "Send File";
+            this.sendFileToolStripMenuItem.Click += new System.EventHandler(this.sendFileToolStripMenuItem_Click);
+            // 
             // mnuExit
             // 
             this.mnuExit.Name = "mnuExit";
-            this.mnuExit.Size = new System.Drawing.Size(102, 24);
+            this.mnuExit.Size = new System.Drawing.Size(138, 24);
             this.mnuExit.Text = "Exit";
             this.mnuExit.Click += new System.EventHandler(this.mnuExit_Click);
             // 
@@ -197,13 +207,6 @@ namespace SerialPortClient
             this.txtHistory.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtHistory.Size = new System.Drawing.Size(310, 197);
             this.txtHistory.TabIndex = 9;
-            // 
-            // sendFileToolStripMenuItem
-            // 
-            this.sendFileToolStripMenuItem.Name = "sendFileToolStripMenuItem";
-            this.sendFileToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
-            this.sendFileToolStripMenuItem.Text = "Send File";
-            this.sendFileToolStripMenuItem.Click += new System.EventHandler(this.sendFileToolStripMenuItem_Click);
             // 
             // Main
             // 

@@ -59,23 +59,24 @@ namespace SerialPortClient
             session.connect();
             session.setPortForwardingL(3306, "localhost", 3306);
 
-            if (session.isConnected()){
+            if (session.isConnected())
+            {
                 try
-				{
-					string dbhost = "localhost";
-					string dbuser = "iafram";
-					string dbpass = "password";
-					string dbdatabase = "iafram";
-					string connStr = String.Format("server={0};user id={1};password={2}; database={3}; pooling=false",
+                {
+                    string dbhost = "localhost";
+                    string dbuser = "iafram";
+                    string dbpass = "password";
+                    string dbdatabase = "iafram";
+                    string connStr = String.Format("server={0};user id={1};password={2}; database={3}; pooling=false",
                         dbhost, dbuser, dbpass, dbdatabase);
-					conn = new MySqlConnection(connStr);
-					conn.Open();
-					conn.ChangeDatabase(dbdatabase);
+                    conn = new MySqlConnection(connStr);
+                    conn.Open();
+                    conn.ChangeDatabase(dbdatabase);
 
                     string query = "SELECT COUNT(*) ";
-                           query += "FROM cse337_project ";
-                           query += "WHERE username = " + quote + txtUsername.Text + quote;
-                           query += " AND password = " + quote + txtPassword.Text + quote;
+                    query += "FROM cse337_project ";
+                    query += "WHERE username = " + quote + txtUsername.Text + quote;
+                    query += " AND password = " + quote + txtPassword.Text + quote;
 
                     MySqlCommand command = conn.CreateCommand();
                     command.CommandText = query;
@@ -90,16 +91,16 @@ namespace SerialPortClient
                     {
                         authorized = false;
                     }
-				}
-				catch (Exception ex)
-				{
-					MessageBox.Show(ex.Message);
-					session.disconnect();
-				}
-				finally
-				{
-					conn.Close();
-				}
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    session.disconnect();
+                }
+                finally
+                {
+                    conn.Close();
+                }
                 session.disconnect();
 
                 if (authorized)
@@ -121,7 +122,7 @@ namespace SerialPortClient
                     txtUsername.Enabled = true;
                     txtPassword.Enabled = true;
                 }
-            }
+            }            
         }
 
         public class MyUserInfo : UserInfo
@@ -144,6 +145,27 @@ namespace SerialPortClient
 
             public void showMessage(String message) { }
 
+        }
+
+        private void txtPassword_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((int)(e.KeyChar) == 13)
+            {
+                btnLogin_Click(sender, e);
+            }
+        }
+
+        private void btnMicro_Click(object sender, EventArgs e)
+        {
+            this.Visible = false;
+            dl = new DataLogger.Program(CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
+            Main m = new Main("microcontroller", dl);
+            m.ShowDialog();
+            dl.CloseFile();
+            btnLogin.Enabled = true;
+            txtUsername.Enabled = true;
+            txtPassword.Enabled = true;
+            this.Visible = true;
         }
         
     }

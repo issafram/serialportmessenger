@@ -57,6 +57,10 @@ namespace DataLogger
 
         public void CloseFile()
         {
+            while (q.Count > 0)
+            {
+                WriteToFile(q.Dequeue());
+            }
             sw.Close();
         }
 
