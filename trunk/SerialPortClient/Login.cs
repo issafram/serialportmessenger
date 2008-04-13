@@ -57,8 +57,17 @@ namespace SerialPortClient
             session.setPassword(pass);
             UserInfo ui = new MyUserInfo();
             session.setUserInfo(ui);
-            session.connect();
-            session.setPortForwardingL(3306, "localhost", 3306);
+            try
+            {
+
+                session.connect();
+                session.setPortForwardingL(3306, "localhost", 3306);
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+            }
+            
 
             if (session.isConnected())
             {
@@ -187,9 +196,15 @@ namespace SerialPortClient
             session.setPassword(pass);
             UserInfo ui = new MyUserInfo();
             session.setUserInfo(ui);
-            session.connect();
-            session.setPortForwardingL(3306, "localhost", 3306);
-
+            try
+            {
+                session.connect();
+                session.setPortForwardingL(3306, "localhost", 3306);
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+            }
             if (session.isConnected())
             {
                 try
