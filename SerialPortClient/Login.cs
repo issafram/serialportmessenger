@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.Diagnostics;
 using Tamir.SharpSsh.jsch;
 using MySql.Data.MySqlClient;
 
@@ -269,6 +270,13 @@ namespace SerialPortClient
                     txtPassword.Enabled = true;
                 }
             }
+        }
+
+        private void btnHelp_Click(object sender, EventArgs e)
+        {
+            Process p = new Process();
+            p.StartInfo.FileName = "HelpFile.chm";
+            p.Start();
         }
     }
 }
