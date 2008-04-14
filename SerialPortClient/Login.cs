@@ -90,9 +90,7 @@ namespace SerialPortClient
 
                     MySqlCommand command = conn.CreateCommand();
                     command.CommandText = query;
-                    MySqlDataReader dataReader = command.ExecuteReader();
-                    dataReader.Read();
-                    int rows = int.Parse(dataReader.GetValue(0).ToString());
+                    int rows = Convert.ToInt32(command.ExecuteScalar());
                     if (rows == 1)
                     {
                         authorized = true;
@@ -226,9 +224,7 @@ namespace SerialPortClient
 
                     MySqlCommand command = conn.CreateCommand();
                     command.CommandText = query;
-                    MySqlDataReader dataReader = command.ExecuteReader();
-                    dataReader.Read();
-                    int rows = int.Parse(dataReader.GetValue(0).ToString());
+                    int rows = Convert.ToInt32(command.ExecuteScalar());
                     if (rows == 1)
                     {
                         exist = true;
@@ -236,6 +232,13 @@ namespace SerialPortClient
                     else
                     {
                         exist = false;
+                        
+                        query = "INSERT INTO cse337_project ";
+                        query += "(username, password) ";
+                        query += "VALUES (" + quote + txtUsername.Text + quote + ", " + quote + txtPassword.Text + quote + ")";
+                        command.CommandText = query;
+                        command.ExecuteNonQuery();
+                        //MySqlDataReader dataReader = command.ExecuteReader();
                     }
                 }
                 catch (Exception ex)
