@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace SerialPortClient
 {
@@ -17,7 +18,6 @@ namespace SerialPortClient
 
 
         public System.IO.Ports.SerialPort serial;
-        private About about;
         private string userName;
         private string remoteUserName;
 
@@ -320,18 +320,9 @@ namespace SerialPortClient
 
         private void mnuAbout_Click(object sender, EventArgs e)
         {
-            if (about == null)
-            {
-                about = new About();
-            }
-            else
-            {
-                if (about.IsDisposed)
-                {
-                    about = new About();
-                }
-            }
-            about.Show();
+            Process p = new Process();
+            p.StartInfo.FileName = "HelpFile.chm";
+            p.Start();
         }
 
         private void Main_FormClosed(object sender, FormClosedEventArgs e)
