@@ -18,6 +18,8 @@ namespace SerialPortClient
         private FileStream sw;
         private long _fileSize;
 
+        public long bufferSize;
+
         public File(Main m, bool sendFile)
         {
             InitializeComponent();
@@ -29,7 +31,18 @@ namespace SerialPortClient
         public long fileSize
         {
             get { return _fileSize; }
-            set { _fileSize = value; }
+            set
+            {
+                _fileSize = value;
+                if (fileSize >= m.serial.WriteBufferSize)
+                {
+                    bufferSize = m.serial.WriteBufferSize;
+                }
+                else
+                {
+                    bufferSize = fileSize;
+                }
+            }
         }
 
         public FileInfo fileInfo
@@ -43,6 +56,13 @@ namespace SerialPortClient
         public void WriteByte(byte b)
         {
             sw.WriteByte(b);
+            pbStatus.Value = (int)(((double)sw.Position / fileSize) * 100);
+            pbStatus.Refresh();
+        }
+
+        public void WriteBytes(byte[] b)
+        {
+            sw.Write(b, 0, (int)bufferSize);
             pbStatus.Value = (int)(((double)sw.Position / fileSize) * 100);
             pbStatus.Refresh();
         }
@@ -63,29 +83,44 @@ namespace SerialPortClient
 
         public void SendFile()
         {
-
-            //this.Show();
+            m.sendingReceivingFile = true;
             this.Text = "Sending File " + fileInfo.Name;
             pbStatus.Maximum = 100;
             pbStatus.Value = 0;
             btnClose.Enabled = false;
             this.Visible = true;
             this.Refresh();
-            byte[] b = new byte[1];
-            while (sw.Position < sw.Length)
+            //byte[] b = new byte[1];
+            //while (sw.Position < sw.Length)
+            //{
+            if ((sw.Length - sw.Position) < bufferSize)
             {
-                sw.Read(b, 0, 1);
-                m.serial.Write(b, 0, 1);
-                if ((((double)sw.Position / sw.Length) - ((double)pbStatus.Value / pbStatus.Maximum)) >= 0.01)
-                {
-                    pbStatus.Value = (int)(Math.Floor(((double)sw.Position / sw.Length) * 100));
-                    pbStatus.Refresh();
-                    this.Refresh();
-                }
+                bufferSize = sw.Length - sw.Position;
             }
-            m.fileMode = false;
-            CloseFile();
-            btnClose.Enabled = true;
+            while (m.messages.Count > 0)
+            {
+                m.serial.Write(m.messages.Dequeue());
+            }
+            byte[] b = new byte[bufferSize];
+            sw.Read(b, 0, (int)bufferSize);
+            m.serial.Write("#B#" + bufferSize + "#EB#");
+            m.serial.Write(b, 0, (int)bufferSize);
+            
+            if ((((double)sw.Position / sw.Length) - ((double)pbStatus.Value / pbStatus.Maximum)) >= 0.01)
+            {
+                pbStatus.Value = (int)(Math.Floor(((double)sw.Position / sw.Length) * 100));
+                pbStatus.Refresh();
+                this.Refresh();
+            }
+            //send any messages
+        //}
+            if (sw.Position >= sw.Length)
+            {
+                m.fileMode = false;
+                //CloseFile();
+                btnClose.Enabled = true;
+                m.sendingReceivingFile = false;
+            }
         }
 
 
@@ -98,6 +133,14 @@ namespace SerialPortClient
                 if (System.IO.File.Exists(fileDialog.FileName))
                 {
                     fileInfo = new FileInfo(fileDialog.FileName);
+                    if (fileInfo.Length >= m.serial.WriteBufferSize)
+                    {
+                        bufferSize = m.serial.WriteBufferSize;
+                    }
+                    else
+                    {
+                        bufferSize = fileInfo.Length;
+                    }
                     sw = new FileStream(fileInfo.FullName,FileMode.Open);
                     m.serial.Write("#F#" + fileInfo.Name + "," + fileInfo.Length.ToString() + "#EF#");
                 }
@@ -119,6 +162,7 @@ namespace SerialPortClient
                         //s.Close();
                         //fileInfo = new FileInfo(sFileDialog.FileName);
                     }
+                    
 
                     sw = new FileStream(fileInfo.FullName, FileMode.Create);
 
