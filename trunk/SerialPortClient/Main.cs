@@ -37,6 +37,8 @@ namespace SerialPortClient
         private bool micro = false;
 
         private List<string> imageCodes = new List<string>();
+
+        private Thread fileThread;
         public Main()
         {
             InitializeComponent();
@@ -77,7 +79,7 @@ namespace SerialPortClient
                         fileSIZE = fileSIZE - 1;
                         if (fileSIZE <= 0)
                         {
-                            MessageBox.Show("File RECEIVED");
+                            //MessageBox.Show("File RECEIVED");
                             f.CloseFile();
                             fileMode = false;
                         }
@@ -132,11 +134,14 @@ namespace SerialPortClient
                                         string fileName = message.Substring(0, message.IndexOf(","));
                                         string size = message.Substring(message.IndexOf(",") + 1);
                                         fileSIZE = long.Parse(size);
-                                        if (MessageBox.Show(remoteUserName + " wants to send file " + fileName + "(" + size + " bytes)." + System.Environment.NewLine + "Accept?", "Accept File?", MessageBoxButtons.YesNo) == DialogResult.OK)
+                                        if (MessageBox.Show(remoteUserName + " wants to send file " + fileName + "(" + size + " bytes)." + System.Environment.NewLine + "Accept?", "Accept File?", MessageBoxButtons.YesNo) == DialogResult.Yes)
                                         {
                                             f = new File(this, false);
+                                            f.Text = "Receiving file : " + fileName;
                                             f.fileSize = fileSIZE;
                                             fileMode = true;
+                                            fileThread = new Thread(new ThreadStart(newFile));
+                                            fileThread.Start();
                                             serial.Write("#FA#");
                                         }
                                         else
@@ -458,8 +463,15 @@ namespace SerialPortClient
 
         private void sendFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            fileThread = new Thread(new ThreadStart(newFile));
             f = new File(this, true);
+            fileThread.Start();
             //f.ShowDialog();
+        }
+
+        private void newFile()
+        {
+            f.ShowDialog();
         }
 
         private void txtMessage_KeyPress(object sender, KeyPressEventArgs e)
@@ -501,7 +513,6 @@ namespace SerialPortClient
         {
             ComboBoxExItem item = (ComboBoxExItem)imageCombo.SelectedItem;
             Image i = imgIcons.Images[item.ImageIndex];
-            
             Clipboard.Clear();
             Clipboard.SetImage(i);
             txtMessage.Paste();
