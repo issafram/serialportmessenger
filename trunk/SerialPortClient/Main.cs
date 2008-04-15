@@ -35,6 +35,8 @@ namespace SerialPortClient
         private bool shift = false;
 
         private bool micro = false;
+
+        private List<string> imageCodes = new List<string>();
         public Main()
         {
             InitializeComponent();
@@ -117,8 +119,8 @@ namespace SerialPortClient
                                     {
                                         string message = data.Substring(data.IndexOf("#M#") + 3, data.LastIndexOf("#EM#") - (data.IndexOf("#M#") + 3));
                                         data = "";
-                                        setText(txtHistory, txtHistory.Text + remoteUserName + " : " + message + System.Environment.NewLine);
-                                        dl.WriteLine(message);
+                                        message = IncludeImages(message);
+                                        receiveMessage(message);
                                         message = null;
                                     }
                                     break;
@@ -161,9 +163,37 @@ namespace SerialPortClient
             }
         }
 
+
+
         private void Main_Load(object sender, EventArgs e)
         {
             Control.CheckForIllegalCrossThreadCalls = false;
+            for (int i = 0; i < imgIcons.Images.Count; i++)
+            {
+                txtTemp.Clear();
+                Image img = imgIcons.Images[i];
+                Clipboard.Clear();
+                Clipboard.SetImage(img);
+                txtTemp.Paste();
+                Clipboard.Clear();
+                string temp = txtTemp.Rtf;
+                temp = temp.Substring(temp.IndexOf("{\\pict\\wmetafile8\\picw338\\pich338\\picwgoal192\\pichgoal192"));
+                temp = temp.Substring(0,temp.IndexOf("}") + 1);
+                imageCodes.Add(temp);
+            }
+
+            imageCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            Image test = new Bitmap("C:\\blah\\test.jpg");
+            imageCombo.ImageList = imgIcons;
+            imageCombo.Items.Add(new ComboBoxExItem("Grin",0));
+            imageCombo.Items.Add(new ComboBoxExItem("???", 1));
+            imageCombo.Items.Add(new ComboBoxExItem("Cool", 2));
+            imageCombo.Items.Add(new ComboBoxExItem("Shock", 3));
+            imageCombo.Items.Add(new ComboBoxExItem("Mad", 4));
+            imageCombo.Items.Add(new ComboBoxExItem("Sad", 5));
+            imageCombo.Items.Add(new ComboBoxExItem("Smile", 6));
+            imageCombo.Items.Add(new ComboBoxExItem("Eek", 7));
+            
             b = new byte[1];
             //dataProcessor = new Thread(new ThreadStart(dataHandling));
             //dataProcessor.Start();
@@ -217,7 +247,7 @@ namespace SerialPortClient
             }
             catch (Exception err)
             {
-                   
+                MessageBox.Show(err.Message);
             }
             
             
@@ -231,13 +261,13 @@ namespace SerialPortClient
             btnSend.Enabled = false;
         }
 
-        delegate void setTextCallback(TextBox textBox, string text);
-        private void setText(TextBox textBox, string text)
+        delegate void setTextCallback(RichTextBox textBox, string text);
+        private void setText(RichTextBox textBox, string text)
         {
             if (textBox.InvokeRequired)
             {
                 setTextCallback d = new setTextCallback(setText);
-                Invoke(d, new object[] {textBox, text });
+                Invoke(d, new object[] { textBox, text });
             }
             else
             {
@@ -246,7 +276,55 @@ namespace SerialPortClient
                 textBox.ScrollToCaret();
                 FlashWindow(this.Handle, true);
             }
-            
+
+        }
+
+
+        delegate void setTextCallback1(RichTextBox textBox, string text);
+        private void setRTF(RichTextBox textBox, string text)
+        {
+            if (textBox.InvokeRequired)
+            {
+                setTextCallback1 d = new setTextCallback1(setRTF);
+                Invoke(d, new object[] { textBox, text });
+            }
+            else
+            {
+                if (textBox.Text.Length > 0)
+                {
+                    textBox.Select(textBox.Text.Length - 1, 1);
+                }
+                else
+                {
+                    textBox.Select(textBox.Text.Length, 1);
+                }
+                textBox.SelectedRtf = text;
+                //textBox.SelectionStart = textBox.Text.Length - 1;
+                textBox.ScrollToCaret();
+                FlashWindow(this.Handle, true);
+            }
+
+        }
+
+        delegate void setTextCallback2(string text);
+        private void receiveMessage(string text)
+        {
+            if ((txtMessage.InvokeRequired) || (txtTemp.InvokeRequired))
+            {
+                setTextCallback2 d = new setTextCallback2(receiveMessage);
+                Invoke(d, new object[] { text });
+            }
+            else
+            {
+                txtTemp.Text = remoteUserName + " : ";
+                txtTemp.Select(txtTemp.Text.Length, 1);
+                txtTemp.SelectedRtf = text;
+                setRTF(txtHistory, txtTemp.Rtf);
+                FlashWindow(this.Handle, true);
+                dl.WriteLine(txtTemp.Text);
+                txtTemp.Clear();
+            }
+
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -307,14 +385,52 @@ namespace SerialPortClient
             }
         }
 
+        private string StripImages(string data)
+        {
+            string ret = data;
+            for (int i = 0; i < imageCodes.Count; i++)
+            {
+                if (ret.Contains(imageCodes[i]))
+                {
+                    ret = ret.Replace(imageCodes[i], "{IMAGE" + i.ToString() + "}");
+                }
+            }
+            return ret;
+        }
+
+        private string IncludeImages(string data)
+        {
+            string ret = data;
+            for (int i = 0; i < imageCodes.Count; i++)
+            {
+                if (ret.Contains("{IMAGE" + i.ToString() + "}"))
+                {
+                    ret = ret.Replace("{IMAGE" + i.ToString() + "}", imageCodes[i]);
+                }
+            }
+            return ret;
+        }
         private void btnSend_Click(object sender, EventArgs e)
         {
+            
             if (txtMessage.Text != "")
             {
-                serial.Write("#M#" + txtMessage.Text + "#EM#");
-                setText(txtHistory, txtHistory.Text + userName + " : " + txtMessage.Text + System.Environment.NewLine);
-                txtMessage.Text = "";
+                serial.Write("#M#" + StripImages(txtMessage.Rtf) + "#EM#");
+                txtTemp.Clear();
+                txtTemp.Text = userName + " : ";
+                txtTemp.Select(txtTemp.Text.Length, 1);
+                txtTemp.SelectedRtf = txtMessage.Rtf;
+                
+                setRTF(txtHistory, txtTemp.Rtf);
+                //setRTF(txtHistory, txtMessage.Rtf);
+                //setRTF(txtHistory, txtHistory.Rtf + userName + " : " + txtMessage.Rtf + System.Environment.NewLine);
+                txtMessage.Clear();
+                txtTemp.Clear();
                 txtMessage.Focus();
+                //serial.Write("#M#" + txtMessage.Text + "#EM#");
+                //setText(txtHistory, txtHistory.Text + userName + " : " + txtMessage.Text + System.Environment.NewLine);
+                //txtMessage.Text = "";
+                //txtMessage.Focus();
             }
         }
 
@@ -379,6 +495,17 @@ namespace SerialPortClient
             {
                 shift = false;
             }
+        }
+
+        private void imageCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBoxExItem item = (ComboBoxExItem)imageCombo.SelectedItem;
+            Image i = imgIcons.Images[item.ImageIndex];
+            
+            Clipboard.Clear();
+            Clipboard.SetImage(i);
+            txtMessage.Paste();
+            Clipboard.Clear();
         }
 
     }
