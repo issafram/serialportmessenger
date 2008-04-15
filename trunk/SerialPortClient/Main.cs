@@ -182,13 +182,13 @@ namespace SerialPortClient
                 txtTemp.Paste();
                 Clipboard.Clear();
                 string temp = txtTemp.Rtf;
-                temp = temp.Substring(temp.IndexOf("{\\pict\\wmetafile8\\picw338\\pich338\\picwgoal192\\pichgoal192"));
+                temp = temp.Substring(temp.IndexOf("{\\pict\\wmetafile8\\"));//picw338\\pich338\\picwgoal192\\pichgoal192"));
                 temp = temp.Substring(0,temp.IndexOf("}") + 1);
                 imageCodes.Add(temp);
             }
 
             imageCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            Image test = new Bitmap("C:\\blah\\test.jpg");
+            //Image test = new Bitmap("C:\\blah\\test.jpg");
             imageCombo.ImageList = imgIcons;
             imageCombo.Items.Add(new ComboBoxExItem("Grin",0));
             imageCombo.Items.Add(new ComboBoxExItem("???", 1));
