@@ -43,19 +43,20 @@ namespace SerialPortClient
         public void WriteByte(byte b)
         {
             sw.WriteByte(b);
-            //temp++;
-            //this.Refresh();
-            if ((int)((sw.Position / fileSize) * 100) != (int)(((sw.Position - 1) / fileSize) * 100))
-            {
-                //pbStatus.Value = (int)((sw.Position / fileSize) * 100);
-                //pbStatus.Refresh();
-                //this.Refresh();
-            }
-            
+            pbStatus.Value = (int)(((double)sw.Position / fileSize) * 100);
+            pbStatus.Refresh();
         }
 
         public void CloseFile()
         {
+            if (sendFile)
+            {
+                this.Text = "Sending File Complete!";
+            }
+            else
+            {
+                this.Text = "Receiving File Complete!";
+            }
             sw.Close();
             btnClose.Enabled = true;
         }
@@ -64,32 +65,30 @@ namespace SerialPortClient
         {
 
             //this.Show();
-            //this.Text = "Sending File " + fileInfo.Name;
-            //pbStatus.Maximum = 100;
-            //pbStatus.Value = 0;
-            //btnClose.Enabled = false;
-            //this.Visible = true;
-            //this.Refresh();
+            this.Text = "Sending File " + fileInfo.Name;
+            pbStatus.Maximum = 100;
+            pbStatus.Value = 0;
+            btnClose.Enabled = false;
+            this.Visible = true;
+            this.Refresh();
             byte[] b = new byte[1];
             while (sw.Position < sw.Length)
             {
                 sw.Read(b, 0, 1);
                 m.serial.Write(b, 0, 1);
-                if ((int)((sw.Position / sw.Length) * 100) != (int)(((sw.Position - 1) / sw.Length) * 100))
+                if ((((double)sw.Position / sw.Length) - ((double)pbStatus.Value / pbStatus.Maximum)) >= 0.01)
                 {
-                    //pbStatus.Value = (int)((sw.Position / sw.Length) * 100);
-                    //pbStatus.Refresh();
-                    //this.Refresh();
+                    pbStatus.Value = (int)(Math.Floor(((double)sw.Position / sw.Length) * 100));
+                    pbStatus.Refresh();
+                    this.Refresh();
                 }
             }
             m.fileMode = false;
             CloseFile();
-            //btnClose.Enabled = true;
+            btnClose.Enabled = true;
         }
 
-        //private void File_Load(object sender, EventArgs e)
-        //{
-        //[STAThreadAttribute]
+
         private void Start(){
             
             if (sendFile)
@@ -123,7 +122,7 @@ namespace SerialPortClient
 
                     sw = new FileStream(fileInfo.FullName, FileMode.Create);
 
-                    this.Show();
+                    //this.Show();
                     //this.Text = "Receiving File " + fileInfo.Name;
                     //pbStatus.Maximum = 100;
                     //pbStatus.Value = 0;
