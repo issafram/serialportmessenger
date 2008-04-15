@@ -26,6 +26,8 @@ namespace SerialPortClient
         public bool fileMode = false;
         private string data = "";
         private long fileSIZE;
+
+        public bool sendingReceivingFile = false;
         Thread dataProcessor;
 
         private File f;
@@ -38,6 +40,7 @@ namespace SerialPortClient
 
         private List<string> imageCodes = new List<string>();
 
+        public Queue<string> messages = new Queue<string>();
         private Thread fileThread;
         public Main()
         {
@@ -71,100 +74,132 @@ namespace SerialPortClient
             }
             else
             {
-                while (q.Count > 0)
+                if ((q.Count > 0) && (fileMode))
                 {
-                    if (fileMode)
+                    if (q.Count >= f.bufferSize)
                     {
-                        f.WriteByte(q.Dequeue());
-                        fileSIZE = fileSIZE - 1;
+                        byte[] buffer = new byte[f.bufferSize];
+                        for (int i = 0; i < f.bufferSize; i++)
+                        {
+                            buffer[i] = q.Dequeue();
+                        }
+                        f.WriteBytes(buffer);
+                        //f.WriteByte(q.Dequeue());
+                        fileSIZE = fileSIZE - f.bufferSize;
+                        fileMode = false;
                         if (fileSIZE <= 0)
                         {
-                            //MessageBox.Show("File RECEIVED");
                             f.CloseFile();
                             fileMode = false;
+                            sendingReceivingFile = false;
                         }
-                    }
-                    else
-                    {
-                        data += ((char)(q.Dequeue())).ToString();
-                        System.Diagnostics.Debug.Print(data);
-                        if ((data.Length > 1) && (data.StartsWith("#")) && (data.EndsWith("#")))
+                        if (messages.Count > 0)
                         {
-                            string command = data.Substring(data.IndexOf("#") + 1, data.IndexOf("#", data.IndexOf("#") + 1) - 1);
-                            switch (command)
+                            while (messages.Count > 0)
                             {
-                                case "C":
-                                    data = "";
-                                    serial.Write("#CC#");
-                                    statusLabel.Text = "Connected";
-                                    serial.Write("#U#" + userName + "#EU#");
-                                    break;
-                                case "CC":
-                                    data = "";
-                                    statusLabel.Text = "Connected";
-                                    serial.Write("#U#" + userName + "#EU#");
-                                    break;
-                                case "U":
-                                    if ((data.Length > 7) && (data.EndsWith("#EU#")))
-                                    {
-                                        remoteUserName = data.Substring(data.IndexOf("#U#") + 3, data.LastIndexOf("#EU#") - (data.IndexOf("#U#") + 3));
-                                        data = "";
-                                    }
-                                    break;
-                                case "E":
-                                    statusLabel.Text = "Connection Closed - By Remote Client";
-                                    serial.Close();
-                                    Reset();
-                                    break;
-                                case "M":
-                                    if ((data.Length > 7) && (data.EndsWith("#EM#")))
-                                    {
-                                        string message = data.Substring(data.IndexOf("#M#") + 3, data.LastIndexOf("#EM#") - (data.IndexOf("#M#") + 3));
-                                        data = "";
-                                        message = IncludeImages(message);
-                                        receiveMessage(message);
-                                        message = null;
-                                    }
-                                    break;
-                                case "F":
-                                    if ((data.Length > 7) && (data.EndsWith("#EF#")))
-                                    {
-                                        string message = data.Substring(data.IndexOf("#F#") + 3, data.LastIndexOf("#EF#") - (data.IndexOf("#F#") + 3));
-                                        data = "";
-                                        string fileName = message.Substring(0, message.IndexOf(","));
-                                        string size = message.Substring(message.IndexOf(",") + 1);
-                                        fileSIZE = long.Parse(size);
-                                        if (MessageBox.Show(remoteUserName + " wants to send file " + fileName + "(" + size + " bytes)." + System.Environment.NewLine + "Accept?", "Accept File?", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                                        {
-                                            f = new File(this, false);
-                                            f.Text = "Receiving file : " + fileName;
-                                            f.fileSize = fileSIZE;
-                                            fileMode = true;
-                                            fileThread = new Thread(new ThreadStart(newFile));
-                                            fileThread.Start();
-                                            serial.Write("#FA#");
-                                        }
-                                        else
-                                        {
-                                            serial.Write("#FD#");
-                                        }
-                                    }
-                                    break;
-                                case "FA":
-                                    //f = new File(this, true);
-                                    data = "";
-                                    f.SendFile();
-                                    break;
-                                case "FD":
-                                    data = "";
-                                    fileMode = false;
-                                    f.CloseFile();
-                                    break;
+                                serial.Write(messages.Dequeue());
                             }
                         }
+                        if (fileSIZE > 0)
+                        {
+                            serial.Write("#N#");
+                        }
                     }
-
+                }
+                while ((q.Count > 0) && (fileMode == false))
+                {
+                
+                    data += ((char)(q.Dequeue())).ToString();
+                    System.Diagnostics.Debug.Print(data);
+                    if ((data.Length > 1) && (data.StartsWith("#")) && (data.EndsWith("#")))
+                    {
+                        string command = data.Substring(data.IndexOf("#") + 1, data.IndexOf("#", data.IndexOf("#") + 1) - 1);
+                        switch (command)
+                        {
+                            case "C":
+                                data = "";
+                                serial.Write("#CC#");
+                                statusLabel.Text = "Connected";
+                                serial.Write("#U#" + userName + "#EU#");
+                                break;
+                            case "CC":
+                                data = "";
+                                statusLabel.Text = "Connected";
+                                serial.Write("#U#" + userName + "#EU#");
+                                break;
+                            case "U":
+                                if ((data.Length > 7) && (data.EndsWith("#EU#")))
+                                {
+                                    remoteUserName = data.Substring(data.IndexOf("#U#") + 3, data.LastIndexOf("#EU#") - (data.IndexOf("#U#") + 3));
+                                    data = "";
+                                }
+                                break;
+                            case "E":
+                                statusLabel.Text = "Connection Closed - By Remote Client";
+                                serial.Close();
+                                Reset();
+                                break;
+                            case "M":
+                                if ((data.Length > 7) && (data.EndsWith("#EM#")))
+                                {
+                                    string message = data.Substring(data.IndexOf("#M#") + 3, data.LastIndexOf("#EM#") - (data.IndexOf("#M#") + 3));
+                                    data = "";
+                                    message = IncludeImages(message);
+                                    receiveMessage(message);
+                                    message = null;
+                                }
+                                break;
+                            case "F":
+                                if ((data.Length > 7) && (data.EndsWith("#EF#")))
+                                {
+                                    string message = data.Substring(data.IndexOf("#F#") + 3, data.LastIndexOf("#EF#") - (data.IndexOf("#F#") + 3));
+                                    data = "";
+                                    string fileName = message.Substring(0, message.IndexOf(","));
+                                    string size = message.Substring(message.IndexOf(",") + 1);
+                                    fileSIZE = long.Parse(size);
+                                    if (MessageBox.Show(remoteUserName + " wants to send file " + fileName + "(" + size + " bytes)." + System.Environment.NewLine + "Accept?", "Accept File?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                                    {
+                                        f = new File(this, false);
+                                        f.Text = "Receiving file : " + fileName;
+                                        f.fileSize = fileSIZE;
+                                        //fileMode = true;
+                                        fileThread = new Thread(new ThreadStart(newFile));
+                                        fileThread.Start();
+                                        sendingReceivingFile = true;
+                                        serial.Write("#FA#");
+                                    }
+                                    else
+                                    {
+                                        serial.Write("#FD#");
+                                    }
+                                }
+                                break;
+                            case "FA":
+                                //f = new File(this, true);
+                                data = "";
+                                f.SendFile();
+                                break;
+                            case "FD":
+                                data = "";
+                                fileMode = false;
+                                f.CloseFile();
+                                break;
+                            case "B":
+                                if ((data.Length > 7) && (data.EndsWith("#EB#")))
+                                {
+                                    string message = data.Substring(data.IndexOf("#B#") + 3, data.LastIndexOf("#EB#") - (data.IndexOf("#B#") + 3));
+                                    data = "";
+                                    f.bufferSize = long.Parse(message);
+                                    fileMode = true;
+                                }
+                                break;
+                            case "N":
+                                data = "";
+                                f.SendFile();
+                                break;
+                        }
                     }
+                }
             }
         }
 
@@ -422,7 +457,14 @@ namespace SerialPortClient
             
             if (txtMessage.Text != "")
             {
-                serial.Write("#M#" + StripImages(txtMessage.Rtf) + "#EM#");
+                if (sendingReceivingFile)
+                {
+                    messages.Enqueue("#M#" + StripImages(txtMessage.Rtf) + "#EM#");
+                }
+                else
+                {
+                    serial.Write("#M#" + StripImages(txtMessage.Rtf) + "#EM#");
+                }
                 txtTemp.Clear();
                 txtTemp.Text = userName + " : ";
                 txtTemp.ForeColor = System.Drawing.Color.Red;
