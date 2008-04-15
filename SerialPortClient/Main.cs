@@ -322,11 +322,13 @@ namespace SerialPortClient
             else
             {
                 txtTemp.Text = remoteUserName + " : ";
+                txtTemp.ForeColor = System.Drawing.Color.Blue;
                 txtTemp.Select(txtTemp.Text.Length, 1);
                 txtTemp.SelectedRtf = text;
                 setRTF(txtHistory, txtTemp.Rtf);
                 FlashWindow(this.Handle, true);
                 dl.WriteLine(txtTemp.Text);
+                //txtTemp.ForeColor = System.Drawing.Color.Red;
                 txtTemp.Clear();
             }
 
@@ -423,6 +425,7 @@ namespace SerialPortClient
                 serial.Write("#M#" + StripImages(txtMessage.Rtf) + "#EM#");
                 txtTemp.Clear();
                 txtTemp.Text = userName + " : ";
+                txtTemp.ForeColor = System.Drawing.Color.Red;
                 txtTemp.Select(txtTemp.Text.Length, 1);
                 txtTemp.SelectedRtf = txtMessage.Rtf;
                 
