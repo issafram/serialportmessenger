@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace SerialPortClient
 {
@@ -17,15 +18,31 @@ namespace SerialPortClient
         private FileInfo _fileInfo;
         private FileStream sw;
         private long _fileSize;
-
+        private string _checksum;
         public long bufferSize;
 
+
+        public string checksum
+        {
+            get { return _checksum; }
+            set { _checksum = value; }
+        }
         public File(Main m, bool sendFile)
         {
             InitializeComponent();
             this.m = m;
             this.sendFile = sendFile;
             Start();
+        }
+
+        public static string GetChecksum(string file)
+        {
+            using (FileStream stream = System.IO.File.OpenRead(file))
+            {
+                SHA256Managed sha = new SHA256Managed();
+                byte[] checksum = sha.ComputeHash(stream);
+                return BitConverter.ToString(checksum).Replace("-", String.Empty);
+            }
         }
 
         public long fileSize
@@ -52,7 +69,7 @@ namespace SerialPortClient
         }
 
 
-        private int temp = 0;
+        //private int temp = 0;
         public void WriteByte(byte b)
         {
             sw.WriteByte(b);
@@ -64,6 +81,7 @@ namespace SerialPortClient
         {
             sw.Write(b, 0, (int)bufferSize);
             pbStatus.Value = (int)(((double)sw.Position / fileSize) * 100);
+            lblStatus.Text = pbStatus.Value.ToString() + "% Done - " + sw.Position.ToString() + " of " + fileSize.ToString() + " byte(s) received.";
             pbStatus.Refresh();
         }
 
@@ -85,14 +103,9 @@ namespace SerialPortClient
         {
             m.sendingReceivingFile = true;
             this.Text = "Sending File " + fileInfo.Name;
-            pbStatus.Maximum = 100;
-            pbStatus.Value = 0;
             btnClose.Enabled = false;
             this.Visible = true;
             this.Refresh();
-            //byte[] b = new byte[1];
-            //while (sw.Position < sw.Length)
-            //{
             if ((sw.Length - sw.Position) < bufferSize)
             {
                 bufferSize = sw.Length - sw.Position;
@@ -110,6 +123,7 @@ namespace SerialPortClient
             {
                 pbStatus.Value = (int)(Math.Floor(((double)sw.Position / sw.Length) * 100));
                 pbStatus.Refresh();
+                lblStatus.Text = pbStatus.Value.ToString() + "% Done - " + sw.Position.ToString() + " of " + sw.Length.ToString() + " byte(s) sent.";
                 this.Refresh();
             }
             //send any messages
@@ -117,7 +131,7 @@ namespace SerialPortClient
             if (sw.Position >= sw.Length)
             {
                 m.fileMode = false;
-                //CloseFile();
+                CloseFile();
                 btnClose.Enabled = true;
                 m.sendingReceivingFile = false;
             }
@@ -132,6 +146,7 @@ namespace SerialPortClient
                 fileDialog.ShowDialog();
                 if (System.IO.File.Exists(fileDialog.FileName))
                 {
+                    checksum = GetChecksum(fileDialog.FileName);
                     fileInfo = new FileInfo(fileDialog.FileName);
                     if (fileInfo.Length >= m.serial.WriteBufferSize)
                     {
@@ -142,7 +157,7 @@ namespace SerialPortClient
                         bufferSize = fileInfo.Length;
                     }
                     sw = new FileStream(fileInfo.FullName,FileMode.Open);
-                    m.serial.Write("#F#" + fileInfo.Name + "," + fileInfo.Length.ToString() + "#EF#");
+                    m.serial.Write("#F#" + fileInfo.Name + "," + fileInfo.Length.ToString() + "," + checksum + "#EF#");
                 }
             }
             else

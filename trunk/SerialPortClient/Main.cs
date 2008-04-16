@@ -28,7 +28,7 @@ namespace SerialPortClient
         private long fileSIZE;
 
         public bool sendingReceivingFile = false;
-        Thread dataProcessor;
+        //Thread dataProcessor;
 
         private File f;
 
@@ -92,6 +92,16 @@ namespace SerialPortClient
                             f.CloseFile();
                             fileMode = false;
                             sendingReceivingFile = false;
+                            if (File.GetChecksum(f.fileInfo.FullName) == f.checksum)
+                            {
+                                f.lblStatus.Text = "File Successfully Received";
+                                serial.Write("#FS#");
+                            }
+                            else
+                            {
+                                f.lblStatus.Text = "File Error (Checksum Is Not Equal)";
+                                serial.Write("#FE#");
+                            }
                         }
                         if (messages.Count > 0)
                         {
@@ -110,7 +120,6 @@ namespace SerialPortClient
                 {
                 
                     data += ((char)(q.Dequeue())).ToString();
-                    System.Diagnostics.Debug.Print(data);
                     if ((data.Length > 1) && (data.StartsWith("#")) && (data.EndsWith("#")))
                     {
                         string command = data.Substring(data.IndexOf("#") + 1, data.IndexOf("#", data.IndexOf("#") + 1) - 1);
@@ -155,13 +164,15 @@ namespace SerialPortClient
                                     string message = data.Substring(data.IndexOf("#F#") + 3, data.LastIndexOf("#EF#") - (data.IndexOf("#F#") + 3));
                                     data = "";
                                     string fileName = message.Substring(0, message.IndexOf(","));
-                                    string size = message.Substring(message.IndexOf(",") + 1);
+                                    string size = message.Substring(message.IndexOf(",") + 1, message.LastIndexOf(",") - message.IndexOf(",") - 1);
+                                    string checksum = message.Substring(message.LastIndexOf(",") + 1);
                                     fileSIZE = long.Parse(size);
                                     if (MessageBox.Show(remoteUserName + " wants to send file " + fileName + "(" + size + " bytes)." + System.Environment.NewLine + "Accept?", "Accept File?", MessageBoxButtons.YesNo) == DialogResult.Yes)
                                     {
                                         f = new File(this, false);
                                         f.Text = "Receiving file : " + fileName;
                                         f.fileSize = fileSIZE;
+                                        f.checksum = checksum;
                                         //fileMode = true;
                                         fileThread = new Thread(new ThreadStart(newFile));
                                         fileThread.Start();
@@ -196,6 +207,14 @@ namespace SerialPortClient
                             case "N":
                                 data = "";
                                 f.SendFile();
+                                break;
+                            case "FE":
+                                data = "";
+                                f.lblStatus.Text = "File Error (Checksum Is Not Equal)";
+                                break;
+                            case "FS":
+                                data = "";
+                                f.lblStatus.Text = "File Successfully Sent";
                                 break;
                         }
                     }
@@ -287,7 +306,7 @@ namespace SerialPortClient
             }
             catch (Exception err)
             {
-                MessageBox.Show(err.Message);
+                //MessageBox.Show(err.Message);
             }
             
             

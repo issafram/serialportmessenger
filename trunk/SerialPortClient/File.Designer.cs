@@ -37,7 +37,7 @@ namespace SerialPortClient
             // 
             this.pbStatus.Location = new System.Drawing.Point(12, 32);
             this.pbStatus.Name = "pbStatus";
-            this.pbStatus.Size = new System.Drawing.Size(336, 23);
+            this.pbStatus.Size = new System.Drawing.Size(400, 23);
             this.pbStatus.TabIndex = 0;
             // 
             // lblStatus
@@ -52,7 +52,7 @@ namespace SerialPortClient
             // btnClose
             // 
             this.btnClose.Enabled = false;
-            this.btnClose.Location = new System.Drawing.Point(273, 65);
+            this.btnClose.Location = new System.Drawing.Point(337, 65);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
             this.btnClose.TabIndex = 2;
@@ -64,7 +64,7 @@ namespace SerialPortClient
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(360, 100);
+            this.ClientSize = new System.Drawing.Size(424, 100);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.pbStatus);
@@ -78,8 +78,8 @@ namespace SerialPortClient
         #endregion
 
         private System.Windows.Forms.ProgressBar pbStatus;
-        private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Button btnClose;
+        public System.Windows.Forms.Label lblStatus;
 
     }
 }
