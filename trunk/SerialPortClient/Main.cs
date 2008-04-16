@@ -34,7 +34,7 @@ namespace SerialPortClient
 
         private File f;
 
-        private DataLogger.Program dl;
+        private DataLogger.DLProgram dl;
 
         private bool shift = false;
 
@@ -50,7 +50,7 @@ namespace SerialPortClient
             remoteUserName = "";
         }
 
-        public Main(string userName, string currDirectory, DataLogger.Program dl)
+        public Main(string userName, string currDirectory, DataLogger.DLProgram dl)
         {
             this.userName = userName;
             this.dl = dl;
@@ -75,20 +75,17 @@ namespace SerialPortClient
                 {
                     //hString = ((q.Dequeue())).ToString();
                     hString = String.Format("{0:x2}", (UInt16)System.Convert.ToByte(((q.Dequeue())).ToString()));
-                    setText(txtHistory, txtHistory.Text + hString + " ");
-
-                    if (hString == "83" || hString == "84" || hString == "85")
+                    if (hString.ToUpper() == "7E")
                     {
-                        dl.WriteLine(hCSV);
-                        hCSV = null;
-                        setText(txtHistory, txtHistory.Text + System.Environment.NewLine);
+                        dl.WriteLine(data);
+                        data += hString;
+                        setText(txtHistory, txtHistory.Text + data.Substring(0,data.Length - 2) + Environment.NewLine);
+                        data = "";
                     }
                     else
                     {
-                        hCSV = hCSV + " " + hString;
+                        data += hString + " ";
                     }
-
-
                     //setText(txtHistory, txtHistory.Text + ((char)(q.Dequeue())).ToString());
                 }
             }
@@ -146,12 +143,14 @@ namespace SerialPortClient
                         {
                             case "C":
                                 data = "";
+                                sendFileToolStripMenuItem.Enabled = true;
                                 serial.Write("#CC#");
                                 statusLabel.Text = "Connected";
                                 serial.Write("#U#" + userName + "#EU#");
                                 break;
                             case "CC":
                                 data = "";
+                                sendFileToolStripMenuItem.Enabled = true;
                                 statusLabel.Text = "Connected";
                                 serial.Write("#U#" + userName + "#EU#");
                                 break;
@@ -334,6 +333,7 @@ namespace SerialPortClient
             btnConnect.Enabled = true;
             btnListen.Enabled = true;
             btnSend.Enabled = false;
+            sendFileToolStripMenuItem.Enabled = false;
         }
 
         delegate void setTextCallback(RichTextBox textBox, string text);

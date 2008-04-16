@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace SerialPortClient
 {
-    static class Program
+    static class SPCProgram
     {
         /// <summary>
         /// The main entry point for the application.
