@@ -144,6 +144,7 @@ namespace SerialPortClient
                             case "C":
                                 data = "";
                                 sendFileToolStripMenuItem.Enabled = true;
+                                btnSend.Enabled = true;
                                 serial.Write("#CC#");
                                 statusLabel.Text = "Connected";
                                 serial.Write("#U#" + userName + "#EU#");
@@ -151,6 +152,7 @@ namespace SerialPortClient
                             case "CC":
                                 data = "";
                                 sendFileToolStripMenuItem.Enabled = true;
+                                btnSend.Enabled = true;
                                 statusLabel.Text = "Connected";
                                 serial.Write("#U#" + userName + "#EU#");
                                 break;
