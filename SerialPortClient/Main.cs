@@ -23,6 +23,8 @@ namespace SerialPortClient
         private string currentDirectory;
 
         private byte[] b;
+        private string hString;
+        private string hCSV = null;
         private Queue<byte> q = new Queue<byte>();
         public bool fileMode = false;
         private string data = "";
@@ -71,7 +73,23 @@ namespace SerialPortClient
             {
                 while (q.Count > 0)
                 {
-                    setText(txtHistory, txtHistory.Text + ((char)(q.Dequeue())).ToString());
+                    //hString = ((q.Dequeue())).ToString();
+                    hString = String.Format("{0:x2}", (UInt16)System.Convert.ToByte(((q.Dequeue())).ToString()));
+                    setText(txtHistory, txtHistory.Text + hString + " ");
+
+                    if (hString == "83" || hString == "84" || hString == "85")
+                    {
+                        dl.WriteLine(hCSV);
+                        hCSV = null;
+                        setText(txtHistory, txtHistory.Text + System.Environment.NewLine);
+                    }
+                    else
+                    {
+                        hCSV = hCSV + " " + hString;
+                    }
+
+
+                    //setText(txtHistory, txtHistory.Text + ((char)(q.Dequeue())).ToString());
                 }
             }
             else
