@@ -14,8 +14,8 @@ namespace DataLogger
 {
     public partial class Main : Form
     {
-        private Program p;
-        public Main(Program p)
+        private DLProgram p;
+        public Main(DLProgram p)
         {
             InitializeComponent();
             this.p = p;

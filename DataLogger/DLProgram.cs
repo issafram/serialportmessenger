@@ -5,7 +5,7 @@ using System.IO;
 
 namespace DataLogger
 {
-    public class Program
+    public class DLProgram
     {
         private StreamWriter sw;
         private Main m;
@@ -14,7 +14,7 @@ namespace DataLogger
         private Timer timer = new Timer();
         private Queue<string> q;
 
-        public Program(string fileName)
+        public DLProgram(string fileName)
         {
             if (File.Exists(fileName + ".csv"))
             {

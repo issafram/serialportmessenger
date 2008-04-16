@@ -8,12 +8,13 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using Tamir.SharpSsh.jsch;
 using MySql.Data.MySqlClient;
+using System.Security.Cryptography;
 
 namespace SerialPortClient
 {
     public partial class Login : Form
     {
-        public DataLogger.Program dl;
+        public DataLogger.DLProgram dl;
         const string quote = "\'";
         private string currentDirectory;
 
@@ -24,6 +25,7 @@ namespace SerialPortClient
             //Gets current directory for HelpFile.chm
             currentDirectory = System.Environment.CurrentDirectory;
         }
+
 
         private void txtUsername_TextChanged(object sender, EventArgs e)
         {
@@ -118,7 +120,7 @@ namespace SerialPortClient
                 {
                     this.Visible = false;
                     //Sets DataLogger file to currentDirectory
-                    dl = new DataLogger.Program(currentDirectory + "/" + CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
+                    dl = new DataLogger.DLProgram(currentDirectory + "/" + CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
                     Main m = new Main(txtUsername.Text, currentDirectory, dl);
                     m.ShowDialog();
                     dl.CloseFile();
@@ -171,7 +173,7 @@ namespace SerialPortClient
         {
             this.Visible = false;
             //Sets DataLogger file to currentDirectory
-            dl = new DataLogger.Program(currentDirectory + "/" + CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
+            dl = new DataLogger.DLProgram(currentDirectory + "/" + CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
             Main m = new Main("microcontroller", currentDirectory, dl);
             m.ShowDialog();
             dl.CloseFile();
