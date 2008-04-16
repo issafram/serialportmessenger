@@ -15,12 +15,14 @@ namespace SerialPortClient
     {
         public DataLogger.Program dl;
         const string quote = "\'";
-        
-        
+        private string currentDirectory;
+
+
         public Login()
         {
-            
             InitializeComponent();
+            //Gets current directory for HelpFile.chm
+            currentDirectory = System.Environment.CurrentDirectory;
         }
 
         private void txtUsername_TextChanged(object sender, EventArgs e)
@@ -39,7 +41,7 @@ namespace SerialPortClient
             btnLogin.Enabled = (CommonFunctions.NotFormOfBlank(txtUsername.Text) & CommonFunctions.NotFormOfBlank(txtPassword.Text));
         }
 
-        
+
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
@@ -68,7 +70,7 @@ namespace SerialPortClient
             {
                 MessageBox.Show(err.Message);
             }
-            
+
 
             if (session.isConnected())
             {
@@ -115,8 +117,9 @@ namespace SerialPortClient
                 if (authorized)
                 {
                     this.Visible = false;
-                    dl = new DataLogger.Program(CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
-                    Main m = new Main(txtUsername.Text, dl);
+                    //Sets DataLogger file to currentDirectory
+                    dl = new DataLogger.Program(currentDirectory + "/" + CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
+                    Main m = new Main(txtUsername.Text, currentDirectory, dl);
                     m.ShowDialog();
                     dl.CloseFile();
                     btnLogin.Enabled = true;
@@ -131,7 +134,7 @@ namespace SerialPortClient
                     txtUsername.Enabled = true;
                     txtPassword.Enabled = true;
                 }
-            }            
+            }
         }
 
         public class MyUserInfo : UserInfo
@@ -167,8 +170,9 @@ namespace SerialPortClient
         private void btnMicro_Click(object sender, EventArgs e)
         {
             this.Visible = false;
-            dl = new DataLogger.Program(CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
-            Main m = new Main("microcontroller", dl);
+            //Sets DataLogger file to currentDirectory
+            dl = new DataLogger.Program(currentDirectory + "/" + CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
+            Main m = new Main("microcontroller", currentDirectory, dl);
             m.ShowDialog();
             dl.CloseFile();
             btnLogin.Enabled = true;
@@ -233,7 +237,7 @@ namespace SerialPortClient
                     else
                     {
                         exist = false;
-                        
+
                         query = "INSERT INTO cse337_project ";
                         query += "(username, password) ";
                         query += "VALUES (" + quote + txtUsername.Text + quote + ", " + quote + txtPassword.Text + quote + ")";
@@ -274,8 +278,9 @@ namespace SerialPortClient
 
         private void btnHelp_Click(object sender, EventArgs e)
         {
+            //Opens HelpFile.chm
             Process p = new Process();
-            p.StartInfo.FileName = "HelpFile.chm";
+            p.StartInfo.FileName = currentDirectory + "/HelpFile.chm";
             p.Start();
         }
     }
