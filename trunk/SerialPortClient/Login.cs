@@ -124,6 +124,7 @@ namespace SerialPortClient
                     Main m = new Main(txtUsername.Text, currentDirectory, dl);
                     m.ShowDialog();
                     dl.CloseFile();
+                    m = null;
                     btnLogin.Enabled = true;
                     txtUsername.Enabled = true;
                     txtPassword.Enabled = true;
@@ -177,6 +178,7 @@ namespace SerialPortClient
             Main m = new Main("microcontroller", currentDirectory, dl);
             m.ShowDialog();
             dl.CloseFile();
+            m = null;
             btnLogin.Enabled = true;
             txtUsername.Enabled = true;
             txtPassword.Enabled = true;
