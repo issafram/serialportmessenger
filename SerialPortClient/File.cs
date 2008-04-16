@@ -97,6 +97,7 @@ namespace SerialPortClient
             }
             sw.Close();
             btnClose.Enabled = true;
+            m.sendFileToolStripMenuItem.Enabled = true;
         }
 
         public void SendFile()

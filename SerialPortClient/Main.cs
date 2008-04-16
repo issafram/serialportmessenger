@@ -28,7 +28,6 @@ namespace SerialPortClient
         private long fileSIZE;
 
         public bool sendingReceivingFile = false;
-        //Thread dataProcessor;
 
         private File f;
 
@@ -84,7 +83,6 @@ namespace SerialPortClient
                             buffer[i] = q.Dequeue();
                         }
                         f.WriteBytes(buffer);
-                        //f.WriteByte(q.Dequeue());
                         fileSIZE = fileSIZE - f.bufferSize;
                         fileMode = false;
                         if (fileSIZE <= 0)
@@ -161,6 +159,7 @@ namespace SerialPortClient
                             case "F":
                                 if ((data.Length > 7) && (data.EndsWith("#EF#")))
                                 {
+                                    sendFileToolStripMenuItem.Enabled = false;
                                     string message = data.Substring(data.IndexOf("#F#") + 3, data.LastIndexOf("#EF#") - (data.IndexOf("#F#") + 3));
                                     data = "";
                                     string fileName = message.Substring(0, message.IndexOf(","));
@@ -173,7 +172,6 @@ namespace SerialPortClient
                                         f.Text = "Receiving file : " + fileName;
                                         f.fileSize = fileSIZE;
                                         f.checksum = checksum;
-                                        //fileMode = true;
                                         fileThread = new Thread(new ThreadStart(newFile));
                                         fileThread.Start();
                                         sendingReceivingFile = true;
@@ -182,11 +180,11 @@ namespace SerialPortClient
                                     else
                                     {
                                         serial.Write("#FD#");
+                                        sendFileToolStripMenuItem.Enabled = true;
                                     }
                                 }
                                 break;
                             case "FA":
-                                //f = new File(this, true);
                                 data = "";
                                 f.SendFile();
                                 break;
@@ -194,6 +192,8 @@ namespace SerialPortClient
                                 data = "";
                                 fileMode = false;
                                 f.CloseFile();
+                                f.Text = "Sending Cancelled";
+                                f.lblStatus.Text = "Remote user cancelled file transfer!";
                                 break;
                             case "B":
                                 if ((data.Length > 7) && (data.EndsWith("#EB#")))
@@ -242,7 +242,6 @@ namespace SerialPortClient
             }
 
             imageCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            //Image test = new Bitmap("C:\\blah\\test.jpg");
             imageCombo.ImageList = imgIcons;
             imageCombo.Items.Add(new ComboBoxExItem("Grin",0));
             imageCombo.Items.Add(new ComboBoxExItem("???", 1));
@@ -254,8 +253,6 @@ namespace SerialPortClient
             imageCombo.Items.Add(new ComboBoxExItem("Eek", 7));
             
             b = new byte[1];
-            //dataProcessor = new Thread(new ThreadStart(dataHandling));
-            //dataProcessor.Start();
             foreach (string s in System.IO.Ports.SerialPort.GetPortNames())
             {
                 cboPorts.Items.Add(s);
@@ -263,32 +260,30 @@ namespace SerialPortClient
             
         }
 
-        private void dataReceive()
-        {
-            while (true)
-            {
-                try
-                {
-                    while (serial.BytesToRead > 0)
-                    {
-                        serial.Read(b, 0, 1);
-                        q.Enqueue(b[0]);
-                        dataHandling();
-                    }
-                }
-                catch (Exception err)
-                {
+        //private void dataReceive()
+        //{
+        //    while (true)
+        //    {
+        //        try
+        //        {
+        //            while (serial.BytesToRead > 0)
+        //            {
+        //                serial.Read(b, 0, 1);
+        //                q.Enqueue(b[0]);
+        //                dataHandling();
+        //            }
+        //        }
+        //        catch (Exception err)
+        //        {
 
-                }
-            }
-        }
+        //        }
+        //    }
+        //}
 
         private void btnListen_Click(object sender, EventArgs e)
         {
             serial = new System.IO.Ports.SerialPort(cboPorts.SelectedItem.ToString());
             serial.Open();
-            //dataProcessor = new Thread(new ThreadStart(dataReceive));
-            //dataProcessor.Start();
             serial.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(serial_DataReceived);
             statusLabel.Text = "Listening...";
         }
@@ -358,7 +353,6 @@ namespace SerialPortClient
                     textBox.Select(textBox.Text.Length, 1);
                 }
                 textBox.SelectedRtf = text;
-                //textBox.SelectionStart = textBox.Text.Length - 1;
                 textBox.ScrollToCaret();
                 FlashWindow(this.Handle, true);
             }
@@ -382,7 +376,6 @@ namespace SerialPortClient
                 setRTF(txtHistory, txtTemp.Rtf);
                 FlashWindow(this.Handle, true);
                 dl.WriteLine(txtTemp.Text);
-                //txtTemp.ForeColor = System.Drawing.Color.Red;
                 txtTemp.Clear();
             }
 
@@ -392,8 +385,6 @@ namespace SerialPortClient
         {
             serial = new System.IO.Ports.SerialPort(cboPorts.SelectedItem.ToString());
             serial.Open();
-            //dataProcessor = new Thread(new ThreadStart(dataReceive));
-            //dataProcessor.Start();
             serial.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(serial_DataReceived);
             statusLabel.Text = "Connecting...";
             serial.Write("#C#");
@@ -411,25 +402,11 @@ namespace SerialPortClient
             {
                 if (serial.IsOpen)
                 {
-                    //MessageBox.Show("serial port is OPEN");
-                    
                     serial.Write("#E#");
-                    //MessageBox.Show("wrote EXIT text");
                     serial.Close();
-                    //MessageBox.Show("serial port CLOSED");
                 }
             }
             dl.CloseFile();
-            //dataProcessor.Join();
-            //MessageBox.Show("EXIT DONE");
-            //if (dataProcessor.ThreadState == ThreadState.Running)
-            //{
-                //while (dataProcessor.ThreadState != ThreadState.Suspended)
-                //{
-                    //dataProcessor.Suspend();
-                    ////dataProcessor.Abort();
-                //}
-            //}
         }
 
         private void cboPorts_SelectedIndexChanged(object sender, EventArgs e)
@@ -491,15 +468,10 @@ namespace SerialPortClient
                 txtTemp.SelectedRtf = txtMessage.Rtf;
                 
                 setRTF(txtHistory, txtTemp.Rtf);
-                //setRTF(txtHistory, txtMessage.Rtf);
-                //setRTF(txtHistory, txtHistory.Rtf + userName + " : " + txtMessage.Rtf + System.Environment.NewLine);
                 txtMessage.Clear();
                 txtTemp.Clear();
                 txtMessage.Focus();
-                //serial.Write("#M#" + txtMessage.Text + "#EM#");
-                //setText(txtHistory, txtHistory.Text + userName + " : " + txtMessage.Text + System.Environment.NewLine);
-                //txtMessage.Text = "";
-                //txtMessage.Focus();
+                
             }
         }
 
@@ -527,10 +499,10 @@ namespace SerialPortClient
 
         private void sendFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            sendFileToolStripMenuItem.Enabled = false;
             fileThread = new Thread(new ThreadStart(newFile));
             f = new File(this, true);
             fileThread.Start();
-            //f.ShowDialog();
         }
 
         private void newFile()
@@ -545,13 +517,13 @@ namespace SerialPortClient
             {
                 if (shift)
                 {
-                    string left = txtMessage.Text.Substring(0, txtMessage.SelectionStart);
-                    string right = txtMessage.Text.Substring(txtMessage.SelectionStart);
-                    txtMessage.Text = left + Environment.NewLine + right;
-                    txtMessage.SelectionStart = left.Length;
+                    txtMessage.SelectedText = "";
+                    shift = false;
                 }
                 else
                 {
+                    txtMessage.Select(txtMessage.Text.Length - 1, 1);
+                    txtMessage.SelectedText = "";
                     btnSend_Click(sender, e);
                 }
             }
@@ -580,7 +552,9 @@ namespace SerialPortClient
             Clipboard.Clear();
             Clipboard.SetImage(i);
             txtMessage.Paste();
+            txtMessage.Focus();
             Clipboard.Clear();
+            
         }
 
     }
