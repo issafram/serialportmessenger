@@ -20,6 +20,7 @@ namespace SerialPortClient
         public System.IO.Ports.SerialPort serial;
         private string userName;
         private string remoteUserName;
+        private string currentDirectory;
 
         private byte[] b;
         private Queue<byte> q = new Queue<byte>();
@@ -47,12 +48,14 @@ namespace SerialPortClient
             remoteUserName = "";
         }
 
-        public Main(string userName, DataLogger.Program dl)
+        public Main(string userName, string currDirectory, DataLogger.Program dl)
         {
             this.userName = userName;
             this.dl = dl;
             InitializeComponent();
             remoteUserName = "";
+            //Sets current directory for HelpFile.chm
+            currentDirectory = currDirectory;
             if (userName == "microcontroller")
             {
                 this.micro = true;
@@ -370,6 +373,7 @@ namespace SerialPortClient
             else
             {
                 txtTemp.Text = remoteUserName + " : ";
+                //Sets the username color to Blue for a received message
                 txtTemp.ForeColor = System.Drawing.Color.Blue;
                 txtTemp.Select(txtTemp.Text.Length, 1);
                 txtTemp.SelectedRtf = text;
@@ -413,7 +417,10 @@ namespace SerialPortClient
         {
             if (cboPorts.SelectedIndex >= 0)
             {
-                btnConnect.Enabled = true;
+                if (micro == false)
+                {
+                    btnConnect.Enabled = true;
+                }
                 btnListen.Enabled = true;
             }
             else
@@ -463,6 +470,7 @@ namespace SerialPortClient
                 }
                 txtTemp.Clear();
                 txtTemp.Text = userName + " : ";
+                //Sets the username color to Red for a sent message
                 txtTemp.ForeColor = System.Drawing.Color.Red;
                 txtTemp.Select(txtTemp.Text.Length, 1);
                 txtTemp.SelectedRtf = txtMessage.Rtf;
@@ -477,8 +485,9 @@ namespace SerialPortClient
 
         private void mnuAbout_Click(object sender, EventArgs e)
         {
+            //Opens HelpFile.chm
             Process p = new Process();
-            p.StartInfo.FileName = "HelpFile.chm";
+            p.StartInfo.FileName = currentDirectory + "/HelpFile.chm";
             p.Start();
         }
 
@@ -554,7 +563,6 @@ namespace SerialPortClient
             txtMessage.Paste();
             txtMessage.Focus();
             Clipboard.Clear();
-            
         }
 
     }
