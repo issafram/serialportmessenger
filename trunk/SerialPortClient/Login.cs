@@ -12,13 +12,15 @@ using System.Security.Cryptography;
 
 namespace SerialPortClient
 {
+    //Login class
     public partial class Login : Form
     {
         public DataLogger.DLProgram dl;
         const string quote = "\'";
         private string currentDirectory;
 
-
+        
+        //Initializer for Login
         public Login()
         {
             InitializeComponent();
@@ -26,17 +28,19 @@ namespace SerialPortClient
             currentDirectory = System.Environment.CurrentDirectory;
         }
 
-
+        //Username changes
         private void txtUsername_TextChanged(object sender, EventArgs e)
         {
             userPassTextChange();
         }
 
+        //Password field changes
         private void txtPassword_TextChanged(object sender, EventArgs e)
         {
             userPassTextChange();
         }
 
+        //When username or password field changes
         private void userPassTextChange()
         {
             btnCreate.Enabled = (CommonFunctions.NotFormOfBlank(txtUsername.Text) & CommonFunctions.NotFormOfBlank(txtPassword.Text));
@@ -44,9 +48,10 @@ namespace SerialPortClient
         }
 
 
-
+        //Logging in to the client
         private void btnLogin_Click(object sender, EventArgs e)
         {
+            btnCreate.Enabled = false;
             btnLogin.Enabled = false;
             txtUsername.Enabled = false;
             txtPassword.Enabled = false;
@@ -67,10 +72,15 @@ namespace SerialPortClient
 
                 session.connect();
                 session.setPortForwardingL(3306, "localhost", 3306);
+                
             }
             catch (Exception err)
             {
                 MessageBox.Show(err.Message);
+                txtUsername.Enabled = true;
+                txtPassword.Enabled = true;
+                btnLogin.Enabled = true;
+                btnCreate.Enabled = true;
             }
 
 
@@ -126,6 +136,7 @@ namespace SerialPortClient
                     dl.CloseFile();
                     m = null;
                     btnLogin.Enabled = true;
+                    btnCreate.Enabled = true;
                     txtUsername.Enabled = true;
                     txtPassword.Enabled = true;
                     this.Visible = true;
@@ -140,6 +151,7 @@ namespace SerialPortClient
             }
         }
 
+        //Class needed for SSH authentication
         public class MyUserInfo : UserInfo
         {
 
@@ -162,6 +174,7 @@ namespace SerialPortClient
 
         }
 
+        //Pressing a button in the Password box
         private void txtPassword_KeyPress(object sender, KeyPressEventArgs e)
         {
             if ((int)(e.KeyChar) == 13)
@@ -170,6 +183,7 @@ namespace SerialPortClient
             }
         }
 
+        //Connect to Microcontroller
         private void btnMicro_Click(object sender, EventArgs e)
         {
             this.Visible = false;
@@ -180,11 +194,13 @@ namespace SerialPortClient
             dl.CloseFile();
             m = null;
             btnLogin.Enabled = true;
+            btnCreate.Enabled = true;
             txtUsername.Enabled = true;
             txtPassword.Enabled = true;
             this.Visible = true;
         }
 
+        //Creating new user
         private void btnCreate_Click(object sender, EventArgs e)
         {
             btnLogin.Enabled = false;
@@ -211,6 +227,10 @@ namespace SerialPortClient
             catch (Exception err)
             {
                 MessageBox.Show(err.Message);
+                txtUsername.Enabled = true;
+                txtPassword.Enabled = true;
+                btnLogin.Enabled = true;
+                btnCreate.Enabled = true;
             }
             if (session.isConnected())
             {
@@ -280,6 +300,7 @@ namespace SerialPortClient
             }
         }
 
+        //Click on help button
         private void btnHelp_Click(object sender, EventArgs e)
         {
             //Opens HelpFile.chm

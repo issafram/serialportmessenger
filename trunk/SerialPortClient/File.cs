@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 
 namespace SerialPortClient
 {
+    //File class
     public partial class File : Form
     {
         private Main m;
@@ -22,11 +23,14 @@ namespace SerialPortClient
         public long bufferSize;
 
 
+        //Checksum property
         public string checksum
         {
             get { return _checksum; }
             set { _checksum = value; }
         }
+
+        //Overloaded initializer
         public File(Main m, bool sendFile)
         {
             InitializeComponent();
@@ -35,6 +39,7 @@ namespace SerialPortClient
             Start();
         }
 
+        //Get checksum of a file
         public static string GetChecksum(string file)
         {
             using (FileStream stream = System.IO.File.OpenRead(file))
@@ -45,6 +50,7 @@ namespace SerialPortClient
             }
         }
 
+        //Filesize property
         public long fileSize
         {
             get { return _fileSize; }
@@ -62,6 +68,7 @@ namespace SerialPortClient
             }
         }
 
+        //Fileinfo property
         public FileInfo fileInfo
         {
             get { return _fileInfo; }
@@ -69,7 +76,7 @@ namespace SerialPortClient
         }
 
 
-        //private int temp = 0;
+        //Write a byte to a file
         public void WriteByte(byte b)
         {
             sw.WriteByte(b);
@@ -77,6 +84,7 @@ namespace SerialPortClient
             pbStatus.Refresh();
         }
 
+        //Write many bytes to a file
         public void WriteBytes(byte[] b)
         {
             sw.Write(b, 0, (int)bufferSize);
@@ -85,6 +93,7 @@ namespace SerialPortClient
             pbStatus.Refresh();
         }
 
+        //Close the file
         public void CloseFile()
         {
             if (sendFile)
@@ -100,6 +109,7 @@ namespace SerialPortClient
             m.sendFileToolStripMenuItem.Enabled = true;
         }
 
+        //Send a packet of bytes
         public void SendFile()
         {
             m.sendingReceivingFile = true;
@@ -127,8 +137,6 @@ namespace SerialPortClient
                 lblStatus.Text = pbStatus.Value.ToString() + "% Done - " + sw.Position.ToString() + " of " + sw.Length.ToString() + " byte(s) sent.";
                 this.Refresh();
             }
-            //send any messages
-        //}
             if (sw.Position >= sw.Length)
             {
                 m.fileMode = false;
@@ -138,7 +146,7 @@ namespace SerialPortClient
             }
         }
 
-
+        //Ask user for file to send/save
         private void Start(){
             
             if (sendFile)
@@ -174,20 +182,11 @@ namespace SerialPortClient
                         sw = new FileStream(sFileDialog.FileName,FileMode.Create);
                         sw.Close();
                         fileInfo = new FileInfo(sFileDialog.FileName);
-                        //StreamWriter s = new StreamWriter(sFileDialog.FileName);
-                        //s.Close();
-                        //fileInfo = new FileInfo(sFileDialog.FileName);
                     }
                     
 
                     sw = new FileStream(fileInfo.FullName, FileMode.Create);
 
-                    //this.Show();
-                    //this.Text = "Receiving File " + fileInfo.Name;
-                    //pbStatus.Maximum = 100;
-                    //pbStatus.Value = 0;
-                    //btnClose.Enabled = false;
-                    //this.Visible = true;
 
                 }
             }
