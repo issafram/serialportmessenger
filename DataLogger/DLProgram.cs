@@ -5,6 +5,7 @@ using System.IO;
 
 namespace DataLogger
 {
+    //DataLogger main class
     public class DLProgram
     {
         private StreamWriter sw;
@@ -14,6 +15,7 @@ namespace DataLogger
         private Timer timer = new Timer();
         private Queue<string> q;
 
+        //Overloaded initializer. File to save to.
         public DLProgram(string fileName)
         {
             if (File.Exists(fileName + ".csv"))
@@ -30,6 +32,7 @@ namespace DataLogger
             timer.Tick += new EventHandler(timer_Tick);
         }
 
+        //Timer ticks - Write to file
         void timer_Tick(object sender, EventArgs e)
         {
             while (q.Count > 0)
@@ -38,11 +41,13 @@ namespace DataLogger
             }
         }
 
+        //Write data to file
         private void WriteToFile(string data)
         {
             sw.WriteLine(data);
         }
 
+        //Write data to queue or file
         public void WriteLine(string data)
         {
             if (automatic)
@@ -55,6 +60,7 @@ namespace DataLogger
             }
         }
 
+        //Make sure data is good for CSV format
         private string ParseForCSV(string data)
         {
             string ret = data;
@@ -63,6 +69,7 @@ namespace DataLogger
             return ret;
         }
 
+        //Close file
         public void CloseFile()
         {
             timer.Stop();
@@ -73,11 +80,13 @@ namespace DataLogger
             sw.Close();
         }
 
+        //Show the options
         public void ShowOptions()
         {
             m.ShowDialog();
         }
 
+        //automatic property
         public bool automatic
         {
             get { return _automatic; }
@@ -95,6 +104,7 @@ namespace DataLogger
             }
         }
 
+        //Timer Interval property
         public int timerInterval
         {
             get { return _timerInterval; }
@@ -114,15 +124,5 @@ namespace DataLogger
         }
 
         
-        ///// <summary>
-        ///// The main entry point for the application.
-        ///// </summary>
-        //[STAThread]
-        //static void Main()
-        //{
-        //    Application.EnableVisualStyles();
-        //    Application.SetCompatibleTextRenderingDefault(false);
-        //    Application.Run(new Main());
-        //}
     }
 }

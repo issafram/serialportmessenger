@@ -4,6 +4,7 @@ using System.Text;
 
 namespace SerialPortClient
 {
+    //Static class full of common functions
     static class CommonFunctions
     {
         public static bool NotFormOfBlank(string text)

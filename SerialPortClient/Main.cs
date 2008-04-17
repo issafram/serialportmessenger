@@ -11,6 +11,7 @@ using System.Diagnostics;
 
 namespace SerialPortClient
 {
+    //Main class
     public partial class Main : Form
     {
         [DllImport("user32.dll")]
@@ -44,12 +45,15 @@ namespace SerialPortClient
 
         public Queue<string> messages = new Queue<string>();
         private Thread fileThread;
+        
+        //Initializer
         public Main()
         {
             InitializeComponent();
             remoteUserName = "";
         }
 
+        //Overloaded initializer used
         public Main(string userName, string currDirectory, DataLogger.DLProgram dl)
         {
             this.userName = userName;
@@ -67,6 +71,7 @@ namespace SerialPortClient
             }
         }
 
+        //DataHandling method handles incoming data
         private void dataHandling()
         {
             if (micro)
@@ -245,7 +250,7 @@ namespace SerialPortClient
         }
 
 
-
+        //When form loads
         private void Main_Load(object sender, EventArgs e)
         {
             Control.CheckForIllegalCrossThreadCalls = false;
@@ -282,26 +287,8 @@ namespace SerialPortClient
             
         }
 
-        //private void dataReceive()
-        //{
-        //    while (true)
-        //    {
-        //        try
-        //        {
-        //            while (serial.BytesToRead > 0)
-        //            {
-        //                serial.Read(b, 0, 1);
-        //                q.Enqueue(b[0]);
-        //                dataHandling();
-        //            }
-        //        }
-        //        catch (Exception err)
-        //        {
-
-        //        }
-        //    }
-        //}
-
+        
+        //Clicked on listening button. port opens
         private void btnListen_Click(object sender, EventArgs e)
         {
             serial = new System.IO.Ports.SerialPort(cboPorts.SelectedItem.ToString());
@@ -310,6 +297,7 @@ namespace SerialPortClient
             statusLabel.Text = "Listening...";
         }
 
+        //Seperate thread when serial port receives data
         private void serial_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
             try
@@ -323,12 +311,13 @@ namespace SerialPortClient
             }
             catch (Exception err)
             {
-                //MessageBox.Show(err.Message);
+                
             }
             
             
         }
 
+        //Reset form
         private void Reset()
         {
             Exit();
@@ -338,6 +327,8 @@ namespace SerialPortClient
             sendFileToolStripMenuItem.Enabled = false;
         }
 
+
+        //Making changing text thread safe
         delegate void setTextCallback(RichTextBox textBox, string text);
         private void setText(RichTextBox textBox, string text)
         {
@@ -357,6 +348,7 @@ namespace SerialPortClient
         }
 
 
+        //Changing RTF thread safe
         delegate void setTextCallback1(RichTextBox textBox, string text);
         private void setRTF(RichTextBox textBox, string text)
         {
@@ -382,6 +374,8 @@ namespace SerialPortClient
 
         }
 
+
+        //Making changing text when receiving message thread safe.
         delegate void setTextCallback2(string text);
         private void receiveMessage(string text)
         {
@@ -405,6 +399,7 @@ namespace SerialPortClient
 
         }
 
+        //Open port and attempt to connect
         private void btnConnect_Click(object sender, EventArgs e)
         {
             serial = new System.IO.Ports.SerialPort(cboPorts.SelectedItem.ToString());
@@ -414,12 +409,14 @@ namespace SerialPortClient
             serial.Write("#C#");
         }
 
+        //Exit
         private void mnuExit_Click(object sender, EventArgs e)
         {
             Exit();
             Close();
         }
 
+        //Exit procedure
         public void Exit()
         {
             if (serial != null)
@@ -433,6 +430,7 @@ namespace SerialPortClient
             dl.CloseFile();
         }
 
+        //Selected a port
         private void cboPorts_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cboPorts.SelectedIndex >= 0)
@@ -450,6 +448,7 @@ namespace SerialPortClient
             }
         }
 
+        //Strip image from RTF
         private string StripImages(string data)
         {
             string ret = data;
@@ -463,6 +462,7 @@ namespace SerialPortClient
             return ret;
         }
 
+        //Put images back in data
         private string IncludeImages(string data)
         {
             string ret = data;
@@ -475,6 +475,8 @@ namespace SerialPortClient
             }
             return ret;
         }
+
+        //Send a message
         private void btnSend_Click(object sender, EventArgs e)
         {
             
@@ -503,6 +505,7 @@ namespace SerialPortClient
             }
         }
 
+        //Press Help button
         private void mnuAbout_Click(object sender, EventArgs e)
         {
             //Opens HelpFile.chm
@@ -511,21 +514,25 @@ namespace SerialPortClient
             p.Start();
         }
 
+        //Form is closing
         private void Main_FormClosed(object sender, FormClosedEventArgs e)
         {
             Exit();
         }
 
+        //Text changed in message box
         private void txtMessage_TextChanged(object sender, EventArgs e)
         {
             btnSend.Enabled = CommonFunctions.NotFormOfBlank(txtMessage.Text);
         }
 
+        //DataLogger options
         private void dataLoggerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dl.ShowOptions();
         }
 
+        //Send file
         private void sendFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             sendFileToolStripMenuItem.Enabled = false;
@@ -534,17 +541,19 @@ namespace SerialPortClient
             fileThread.Start();
         }
 
+        //Start new thread for file
         private void newFile()
         {
             f.ShowDialog();
         }
 
+        //Key is pressed in message box
         private void txtMessage_KeyPress(object sender, KeyPressEventArgs e)
         {
             
-            if ((int)(e.KeyChar) == 13)
+            if ((int)(e.KeyChar) == 13) //Enter is pressed
             {
-                if (shift)
+                if (shift) //Shift is pressed
                 {
                     txtMessage.SelectedText = "";
                     shift = false;
@@ -558,6 +567,7 @@ namespace SerialPortClient
             }
         }
 
+        //Key is pressed down
         private void txtMessage_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Shift)
@@ -566,6 +576,7 @@ namespace SerialPortClient
             }
         }
 
+        //Key is released
         private void txtMessage_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Shift)
@@ -574,6 +585,7 @@ namespace SerialPortClient
             }
         }
 
+        //Selected emoticon
         private void imageCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBoxExItem item = (ComboBoxExItem)imageCombo.SelectedItem;

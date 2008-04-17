@@ -6,6 +6,7 @@ using System.Drawing;
 
 namespace SerialPortClient
 {
+    //Class used for combo box with pictures
     class ComboBoxEx : ComboBox
   {
     private ImageList imageList;

@@ -12,15 +12,18 @@ using System.Windows.Forms;
 
 namespace DataLogger
 {
+    //Options form for DataLogger
     public partial class Main : Form
     {
         private DLProgram p;
+        //Overloaded initializer
         public Main(DLProgram p)
         {
             InitializeComponent();
             this.p = p;
         }
 
+        //Form loaded
         private void Main_Load(object sender, EventArgs e)
         {
             rbAutomatic.Checked = p.automatic;
@@ -51,16 +54,19 @@ namespace DataLogger
             #endregion
         }
 
+        //Changed checkbox state
         private void rbAutomatic_CheckedChanged(object sender, EventArgs e)
         {
             Validate();
         }
 
+        //Changed checkbox state
         private void rbManual_CheckedChanged(object sender, EventArgs e)
         {
             Validate();
         }
 
+        //Validated what has been selected.
         private void Validate()
         {
             comboboxSeconds.Enabled = rbManual.Checked;
@@ -81,6 +87,7 @@ namespace DataLogger
             }
         }
 
+        //Checks if input is numeric or not
         public static bool IsNumeric(string Expression)
         {
             bool answer = true;
@@ -101,11 +108,13 @@ namespace DataLogger
             return answer;
         }
 
+        //Closes form
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
+        //Saved options
         private void btnSave_Click(object sender, EventArgs e)
         {
             p.automatic = rbAutomatic.Checked;
