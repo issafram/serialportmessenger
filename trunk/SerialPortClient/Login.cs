@@ -18,6 +18,7 @@ namespace SerialPortClient
         public DataLogger.DLProgram dl;
         const string quote = "\'";
         private string currentDirectory;
+        private string desktopDirectory;
 
         
         //Initializer for Login
@@ -26,6 +27,7 @@ namespace SerialPortClient
             InitializeComponent();
             //Gets current directory for HelpFile.chm
             currentDirectory = System.Environment.CurrentDirectory;
+            desktopDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
         }
 
         //Username changes
@@ -129,8 +131,8 @@ namespace SerialPortClient
                 if (authorized)
                 {
                     this.Visible = false;
-                    //Sets DataLogger file to currentDirectory
-                    dl = new DataLogger.DLProgram(currentDirectory + "/" + CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
+                    //Sets DataLogger file to desktopDirectory
+                    dl = new DataLogger.DLProgram(desktopDirectory + "/" + CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
                     Main m = new Main(txtUsername.Text, currentDirectory, dl);
                     m.ShowDialog();
                     dl.CloseFile();
@@ -187,8 +189,8 @@ namespace SerialPortClient
         private void btnMicro_Click(object sender, EventArgs e)
         {
             this.Visible = false;
-            //Sets DataLogger file to currentDirectory
-            dl = new DataLogger.DLProgram(currentDirectory + "/" + CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
+            //Sets DataLogger file to desktopDirectory
+            dl = new DataLogger.DLProgram(desktopDirectory + "/" + CommonFunctions.FileNameSafe(DateTime.Now.ToLongTimeString()));
             Main m = new Main("microcontroller", currentDirectory, dl);
             m.ShowDialog();
             dl.CloseFile();

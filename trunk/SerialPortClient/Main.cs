@@ -518,6 +518,7 @@ namespace SerialPortClient
         private void Main_FormClosed(object sender, FormClosedEventArgs e)
         {
             Exit();
+            MessageBox.Show("You can view your received messages by opening the 'Microsoft Office Excel Comma Separated Values File' created on your Desktop");
         }
 
         //Text changed in message box
